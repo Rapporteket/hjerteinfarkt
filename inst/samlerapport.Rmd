@@ -1,18 +1,35 @@
 ---
 params:
-  type: pdf
+  type: html_fragment
+  HealthUnitShortName: "Ahus" #Standardverdi
+  reshID: reshID
   var: mpg
   bins: 5
-title: Samlerapport
-subtitle: en eksempelrapport fra rapRegTemplate
+title: Tertialrapport
+subtitle: Tertialrapport for Norsk hjerteinfarktregister
+runtime: shiny
 author: Rapporteket
 userFullName: Tore Tester
 registryName: SKDE
 reglogo: '`r system.file("logo.png", package = "rapRegTemplate")`'
-regtext: '`r readLines(system.file("shortDescription.txt", package = "rapRegTemplate"))`'
 date: '`r format(Sys.time(), "%d. %B %Y")`'
 abstract: Om rapporten trenger et sammendrag kan det settes inn her
 ---
+
+<!-- --- -->
+<!-- params: -->
+<!--   type: pdf -->
+<!--   var: HealthUnitShortName -->
+<!--   HealthUnitShortName: Ahus -->
+<!--   bins: 5 -->
+<!-- title: STEMI-rapport -->
+<!-- subtitle: en eksempelrapport fra rapRegTemplate -->
+<!-- runtime: shiny -->
+<!-- author: Rapporteket -->
+<!-- reglogo: '`r system.file("logo.png", package = "rapRegTemplate")`' -->
+<!-- regtext: '`r readLines(system.file("shortDescription.txt", package = "rapRegTemplate"))`' -->
+<!-- date: '`r format(Sys.time(), "%d. %B %Y")`' -->
+<!-- --- -->
 
 ```{r setup, include=FALSE}
 library(knitr)
@@ -22,33 +39,382 @@ knitr::opts_chunk$set(echo = FALSE)
 ```
 
 
-# Samlerapport
-Dette er eksempel på en samlerapport som er egnet til å kombinere presentasjon
-av dynamisk tekst, tabeller og figurer. Samlerapporter kan vises i selve
-Rapporeket, lastes ned eller sendes (rutinemessig) per epost til de som ønsker
-det.
+# STEMI-rapport
+Denne rapporten viser resultater for STEMI-pasienter som har bostedsadresse i opptaksområdet til sykehuset du er innlogget ved. Pasientene kan være behandlet ved andre sykehus. 
+Rapporten er opppdatert med data registrert i registeret per  `r format(Sys.Date(), "%A %d. %b %Y")`.  
 
-
-## Eksempel på dynamisk tekst
-Idag, `r format(Sys.Date(), "%A %d. %b %Y")` er det
-`r as.numeric(format(Sys.Date(), "%j"))` dager siden nyttår.
-
-
-## Eksempel på tabell
-Tabell \@ref(tab:eksTab) under er fin, og illustrerer poenget.
+## Deskriptive resultater
+Tabell 1 viser deskriptive resultater for STEMI-pasientene i opptaksområdet i aktuell periode. 
 
 ```{r eksTab}
-dt <- mtcars[1:6, ][params$var]
-cap <- paste("Eksempeltabell som viser variabelen", params$var, "fra mtcars.")
+#dt <-  read.csv("I:/STOLAV - Fellesområder/Prosjekter/Norsk hjerteinfarktregister - datadump/Rapporteket/Hjerteinfarkt/data/data_2025-09-06_1317.csv",header=T,sep=";",fileEncoding = "latin1" )
 
-rapbase::mst(tab = dt, type = params$type, cap = cap)
+dt <- rapbase::loadRegData("data",query = "SELECT * FROM data WHERE Innleggelsesaar>=2024;")
+
+
+
+
+
+#dt <- dt[which(dt$HealthUnitShortName==params$HealthUnitShortName),]
+
+#dt <- dt[which(dt$RHF=="Helse Nord"),]
+
 
 ```
 
 
-## Eksempel på figur
-Samlerapporter kan også inneholde figurer basert på data slik som vist i Figur \@ref(fig:eksFig).
 
-```{r eksFig, echo=FALSE, out.width="80%", fig.cap=paste("Eksempelfigur som viser frekvensfordelingen av", params$var, "fra mtcars.")}
-f <- rapRegTemplate::makeSimpleHist(df = mtcars, var = params$var, bins = params$bins, makeTable = FALSE)
+```{r echo=FALSE}
+
+
+
+#sortere dump
+Innleggelsestidspunkt  <- as.POSIXct(dt$Innleggelsestidspunkt ,format="%d.%m.%Y%H:%M")
+dt <- dt[order(Innleggelsestidspunkt,decreasing = TRUE),]
+
+#Sykehus
+dt <- dt[which(dt$SamletStType==1 & dt$HvorBefantPasientenSeg==1 & dt$Innleggelsesaar>=2024),]
+
+
+Innleggelsesaar <- dt$Innleggelsesaar
+
+Innleggelsestidspunkt1 <- dt$Innleggelsestidspunkt
+
+Mnd <- substr(Innleggelsestidspunkt1,4,5)
+
+Tertial <- rep(NA,length(Innleggelsesaar))
+for(i in 1:length(Innleggelsesaar))
+{
+  #print(i)
+  if(as.numeric(Mnd)[i]<=4)
+  {
+    Tertial[i] <- "1. tertial"
+  }
+  if(as.numeric(Mnd)[i]>=5 & as.numeric(Mnd)[i]<=8)
+  {
+    Tertial[i] <- "2. tertial"
+  }
+  if(as.numeric(Mnd)[i]>=9)
+  {
+    Tertial[i] <- "3. tertial"
+  }
+}
+
+#Tertial <- rep("1. tertial",length(Innleggelsesaar))
+
+ Aar_tertial <- paste(Innleggelsesaar,Tertial,sep=",")
+ #table(Aar_tertial)
+# 
+# 
+ STEMI_tabell <- matrix("",21,length(unique(Aar_tertial)))
+ Aar_tertial_sort <- sort(unique(Aar_tertial),decreasing = FALSE)
+ colnames(STEMI_tabell) <- Aar_tertial_sort
+ rownames(STEMI_tabell) <- c("Antall STEMI","Antall STEMI over 85 år","Andel menn","Median alder","Symptomdebut mer enn 12 timer før FMK","Antall diagnostisk EKG tatt prehospitalt","Antall diagnostisk EKG tatt på sykehus","Antall prehospital trombolyse","Antall trombolyse på sykehus","Trombolyse ikke gitt"," --- Primær PCI valgt som initial reperfusjonsstrategi"," --- Trombolyse kontraindisert ut fra sykehistorie/medisinsk tilstand"," --- Annen årsak"," --- Ukjent","Antall invasivt utredet","Antall ikke invasivt utredet","---Pasienten ønsket ikke invasiv utredning","---Kontraindikasjoner mot invasiv utredning (alder, medisinsk tilstand)","---Pasienten er tidligere invasivt utredet i samme sykdomsforløp","---Andre årsaker","---Ukjent")
+                             
+ #                            ,"Ukjent tidspunkt på diagnostisk EKG","Ukjent tidspunkt på trombolyse","Ukjent tidspunkt på FMK","Ukjent tidspunkt på invasiv koronar angiografi","Ukjent tidspunkt på PCI")
+# 
+ Antall_STEMI <- rep(0,length(unique(Aar_tertial)))
+ Antall_STEMI_85 <- rep(0,length(unique(Aar_tertial)))
+ Andel_menn <- rep(0,length(unique(Aar_tertial)))
+ Symptomdebut_12 <- rep(0,length(unique(Aar_tertial)))
+ EKG_prehospitalt <- rep(0,length(unique(Aar_tertial)))
+ EKG_sykehus <- rep(0,length(unique(Aar_tertial)))
+ Trombolyse_prehospitalt <- rep(0,length(unique(Aar_tertial)))
+ Trombolyse_sykehus <- rep(0,length(unique(Aar_tertial)))
+ Trombolyse_ikkeGitt <- rep(0,length(unique(Aar_tertial)))
+ PrimaerPCI_valgt <- rep(0,length(unique(Aar_tertial)))
+ Trombolyse_kontraindisert <- rep(0,length(unique(Aar_tertial)))
+ Trombolyse_ikkeGitt_Annen <- rep(0,length(unique(Aar_tertial)))
+ Trombolyse_ikkeGitt_Ukjent <- rep(0,length(unique(Aar_tertial)))
+ 
+ Invasivt_utredet <- rep(0,length(unique(Aar_tertial)))
+ IkkeInvasivt_utredet <- rep(0,length(unique(Aar_tertial)))
+ Invasivt_OnsketIkke <- rep(0,length(unique(Aar_tertial)))
+ Invasivt_Kontraindikasjoner <- rep(0,length(unique(Aar_tertial)))
+ Invasivt_TidligereUtredet <- rep(0,length(unique(Aar_tertial)))
+ Invasivt_AndreAarsaker <- rep(0,length(unique(Aar_tertial)))
+ Invasivt_Ukjent <- rep(0,length(unique(Aar_tertial)))
+ 
+# 
+ Median_alder <- rep("",length(unique(Aar_tertial)))
+ 
+
+ for(i in 1:length(unique(Aar_tertial)))
+ {
+   Antall_STEMI[i] <- length(which(dt$SamletStType==1 & Aar_tertial==Aar_tertial_sort[i]))
+   Antall_STEMI_85[i]  <- length(which((dt$SamletStType==1 & dt$PatientAge>85 & Aar_tertial==Aar_tertial_sort[i])))
+   Andel_menn[i] <- paste(round(length(which(dt$PatientGender==1 &  Aar_tertial==Aar_tertial_sort[i]))/length(which(Aar_tertial==Aar_tertial_sort[i])),2)*100," %",sep="")
+   Median_alder[i] <- round(median(dt$PatientAge[which(Aar_tertial==Aar_tertial_sort[i])] ),0)
+   
+   ForsteKontakt <- dt$ForsteKontakt
+   ForsteKontakt <- as.POSIXct(ForsteKontakt,format="%d.%m.%Y%H:%M")
+   Symptomdebut <- dt$Symptomdebut
+   Symptomdebut <- as.POSIXct(Symptomdebut,format="%d.%m.%Y%H:%M")
+   
+   id_2 <- which(dt$TidUkjentForsteKontakt==1 & dt$TidUkjentSymptomdebut==1)
+   
+   diff_Sympt_FMK <- as.numeric(difftime(ForsteKontakt,Symptomdebut,units="hours"))
+   
+   Symptomdebut_12[i] <- length(which(Aar_tertial==Aar_tertial_sort[i] & ((dt$SymptomdebutAntattTid>=2 & dt$SymptomdebutAntattTid<=4) |     (diff_Sympt_FMK>12 & dt$TidUkjentForsteKontakt==1 & dt$TidUkjentSymptomdebut==1)  )))
+   
+   EKG_prehospitalt[i] <- length(which(Aar_tertial==Aar_tertial_sort[i] & dt$PrehospEKGLokasjon==1))
+   EKG_sykehus[i] <- length(which(Aar_tertial==Aar_tertial_sort[i] & dt$PrehospEKGLokasjon==2))
+   Trombolyse_prehospitalt[i] <- length(which(Aar_tertial==Aar_tertial_sort[i] & dt$Trombolysebeh==1))
+   Trombolyse_sykehus[i] <- length(which(Aar_tertial==Aar_tertial_sort[i] & dt$Trombolysebeh==2))
+   Trombolyse_ikkeGitt[i] <- length(which(Aar_tertial==Aar_tertial_sort[i] & dt$Trombolysebeh==0)) 
+   PrimaerPCI_valgt[i] <- length(which(Aar_tertial==Aar_tertial_sort[i] & dt$TrombolyseIkkeGitt==1)) 
+   Trombolyse_kontraindisert[i] <- length(which(Aar_tertial==Aar_tertial_sort[i] & dt$TrombolyseIkkeGitt==2)) 
+   Trombolyse_ikkeGitt_Annen[i] <- length(which(Aar_tertial==Aar_tertial_sort[i] & dt$TrombolyseIkkeGitt==3)) 
+   Trombolyse_ikkeGitt_Ukjent[i] <- length(which(Aar_tertial==Aar_tertial_sort[i] & dt$TrombolyseIkkeGitt==9)) 
+   Invasivt_utredet[i] <- length(which(Aar_tertial==Aar_tertial_sort[i] & (dt$InvKunKorAngio==1 | dt$InvPCI==1)  ))
+   IkkeInvasivt_utredet[i] <- length(which(Aar_tertial==Aar_tertial_sort[i] & (dt$InvKunKorAngio!= 1 & dt$InvPCI!=1)  ))
+   Invasivt_OnsketIkke[i] <- length(which(Aar_tertial==Aar_tertial_sort[i] & dt$InvAarsakIkkeUtfort==1  ))
+   Invasivt_Kontraindikasjoner[i] <- length(which(Aar_tertial==Aar_tertial_sort[i] & dt$InvAarsakIkkeUtfort==2  ))
+   Invasivt_TidligereUtredet[i] <- length(which(Aar_tertial==Aar_tertial_sort[i] & dt$InvAarsakIkkeUtfort==3  ))
+   Invasivt_AndreAarsaker[i] <- length(which(Aar_tertial==Aar_tertial_sort[i] & dt$InvAarsakIkkeUtfort==4  ))
+   Invasivt_Ukjent[i] <- length(which(Aar_tertial==Aar_tertial_sort[i] & dt$InvAarsakIkkeUtfort==9  ))
+ 
+   
+ }
+ STEMI_tabell[1,] <- Antall_STEMI
+ STEMI_tabell[2,] <- Antall_STEMI_85
+ STEMI_tabell[3,] <- Andel_menn
+ STEMI_tabell[4,] <- Median_alder
+ STEMI_tabell[5,] <- Symptomdebut_12
+ STEMI_tabell[6,] <- EKG_prehospitalt
+ STEMI_tabell[7,] <- EKG_sykehus
+ STEMI_tabell[8,] <- Trombolyse_prehospitalt
+ STEMI_tabell[9,] <- Trombolyse_sykehus
+ STEMI_tabell[10,] <- Trombolyse_ikkeGitt
+ STEMI_tabell[11,] <- PrimaerPCI_valgt
+ STEMI_tabell[12,] <- Trombolyse_kontraindisert
+ STEMI_tabell[13,] <- Trombolyse_ikkeGitt_Annen
+ STEMI_tabell[14,] <- Trombolyse_ikkeGitt_Ukjent
+ STEMI_tabell[15,] <- Invasivt_utredet
+ STEMI_tabell[16,] <- IkkeInvasivt_utredet
+ STEMI_tabell[17,] <- Invasivt_OnsketIkke
+ STEMI_tabell[18,] <- Invasivt_Kontraindikasjoner
+ STEMI_tabell[19,] <- Invasivt_TidligereUtredet
+ STEMI_tabell[20,] <- Invasivt_AndreAarsaker
+ STEMI_tabell[21,] <- Invasivt_Ukjent
+ 
+# 
+# 
+# 
+# 
+ kable(STEMI_tabell)
+
+
 ```
+
+
+
+## Ukjente tidspunkter
+
+```{r echo=FALSE}
+
+
+Innleggelsesaar <- dt$Innleggelsesaar
+Innleggelsestidspunkt <- dt$Innleggelsestidspunkt
+Mnd <- substr(Innleggelsestidspunkt,4,5)
+ 
+
+ 
+ #Tertial <- rep("1. tertial",length(Innleggelsesaar))
+# 
+ Aar_tertial <- paste(Innleggelsesaar,Tertial,sep=",")
+ #table(Aar_tertial)
+# 
+Ukjent_tabell <- matrix("",5,length(unique(Aar_tertial)))
+Aar_tertial_sort <- sort(unique(Aar_tertial),decreasing = FALSE)
+colnames(Ukjent_tabell) <- Aar_tertial_sort
+rownames(Ukjent_tabell) <- c("Ukjent eller manglende tidspunkt på diagnostisk EKG","Ukjent eller manglende tidspunkt på FMK","Ukjent eller manglende tidspunkt på trombolyse","Ukjent eller manglende tidspunkt på invasiv koronar angiografi","Ukjent eller manglende tidspunkt på PCI")
+# 
+# 
+UkjentTidspunkt_EKG <- rep(0,length(unique(Aar_tertial)))
+UkjentTidspunkt_FMK <- rep(0,length(unique(Aar_tertial)))
+UkjentTidspunkt_Trombolyse <- rep(0,length(unique(Aar_tertial)))
+UkjentTidspunkt_Angio <- rep(0,length(unique(Aar_tertial)))
+UkjentTidspunkt_PCI <- rep(0,length(unique(Aar_tertial)))
+# 
+for(i in 1:length(unique(Aar_tertial)))
+ {
+ 
+   #Skjul innkomstvariabler?
+   UkjentTidspunkt_EKG[i] <- length(which((Aar_tertial==Aar_tertial_sort[i] & (dt$TidUkjentPrehospitaltEkg==0|dt$TidUkjentPrehospitaltEkg==2) ))) 
+   UkjentTidspunkt_FMK[i] <- length(which(Aar_tertial==Aar_tertial_sort[i] & (dt$TidUkjentForsteKontakt==0|dt$TidUkjentForsteKontakt==2    )))  
+   UkjentTidspunkt_Trombolyse[i] <- length(which(Aar_tertial==Aar_tertial_sort[i] & (dt$Trombolysebeh==1 | dt$Trombolysebeh==2) &  (dt$TidUkjentTrombolyse==0|dt$TidUkjentTrombolyse==2    )))  
+   UkjentTidspunkt_Angio[i] <- length(which(Aar_tertial==Aar_tertial_sort[i] & dt$InvKunKorAngio==1 & (dt$TidUkjentInvKoronarAngio==0|dt$TidUkjentInvKoronarAngio==2    )))  
+   UkjentTidspunkt_PCI[i] <- length(which(Aar_tertial==Aar_tertial_sort[i] & dt$InvPCI==1 & (dt$TidUkjentInvPci==0|dt$TidUkjentInvPci==2    )))  
+ 
+   
+ }
+# 
+ Ukjent_tabell[1,] <- UkjentTidspunkt_EKG
+ Ukjent_tabell[2,] <- UkjentTidspunkt_FMK
+ Ukjent_tabell[3,] <- UkjentTidspunkt_Trombolyse
+ Ukjent_tabell[4,] <- UkjentTidspunkt_Angio
+ Ukjent_tabell[5,] <- UkjentTidspunkt_PCI
+# 
+# 
+ kable(Ukjent_tabell)
+
+```
+
+
+### Figur 1: Tid fra første medisinske kontakt til diagnostisk EKG tatt prehospitalt
+
+
+```{r echo=FALSE,warning=FALSE,message=FALSE,fig.width=7, fig.height=7}
+ForsteKontakt <- dt$ForsteKontakt
+ForsteKontakt <- as.POSIXct(ForsteKontakt,format="%d.%m.%Y%H:%M")
+EKG_tidspunkt <- dt$PrehospEkGtid
+EKG_tidspunkt <- as.POSIXct(EKG_tidspunkt,format="%d.%m.%Y%H:%M")
+
+Inndato <- substr(dt$Innleggelsestidspunkt,1,10)
+
+#Kjente tidspunkter
+id <- which(dt$TidUkjentForsteKontakt==1 & dt$PrehospEKGLokasjon==1 & dt$TidUkjentPrehospEkGtid==1 )[1:50]
+
+Diff_FMK_EKG <- as.numeric(difftime(EKG_tidspunkt,ForsteKontakt,units="mins"))
+
+median_Diff_FMK_EKG <- median(Diff_FMK_EKG[id])
+
+ymax <- max(Diff_FMK_EKG[id])+10
+#ymax <- 400
+
+par(mar=c(10,5,1,1)) 
+plot(rev(Diff_FMK_EKG[id]),xaxt="n",yaxt="n",ylim=c(0,150),xlab="",ylab="Minutter",frame.plot = FALSE,cex.main=1.0)
+lines(rev(Diff_FMK_EKG[id]))
+abline(h=median_Diff_FMK_EKG,col="red")
+axis(1,at=seq(1,length(Diff_FMK_EKG[id])),labels=rev(Inndato[id]),las=2,cex.axis=1.0)
+axis(2,cex.axis=1.0,las=2)
+text(seq(1,length(Diff_FMK_EKG[id])),rev(Diff_FMK_EKG[id]),labels=rev(Diff_FMK_EKG[id]),pos=3,cex=1.0)
+
+```
+
+Figur 1 viser antall minutter fra første medisinske kontakt (FMK) til diagnostisk EKG tatt prehospitalt for pasienter innlagt i perioden `r min(Aar_tertial)` til `r max(Aar_tertial)`. Median antall minutter fra første medisinske kontakt til diagnostisk EKG tatt prehospitalt (rød linje) i denne perioden var `r median_Diff_FMK_EKG` minutter. 
+
+
+### Figur 2:  Tid fra første medisinske kontakt til innleggelse
+
+```{r echo=FALSE,warning=FALSE,message=FALSE,fig.width=7, fig.height=7}
+ForsteKontakt <- dt$ForsteKontakt
+ForsteKontakt <- as.POSIXct(ForsteKontakt,format="%d.%m.%Y%H:%M")
+Innleggelsestidspunkt <- dt$Innleggelsestidspunkt 
+Innleggelsestidspunkt  <- as.POSIXct(Innleggelsestidspunkt ,format="%d.%m.%Y%H:%M")
+
+Inndato <- substr(dt$Innleggelsestidspunkt,1,10)
+
+#Kjente tidspunkter
+id <- which(dt$TidUkjentForsteKontakt==1 & dt$TidUkjentInnleggelsestidspunkt ==1 )[1:50]
+
+Diff_FMK_Innleggelsestidspunkt  <- as.numeric(difftime(Innleggelsestidspunkt ,ForsteKontakt,units="mins"))
+
+median_Diff_FMK_Innleggelsestidspunkt  <- median(Diff_FMK_Innleggelsestidspunkt [id])
+
+ymax <- max(Diff_FMK_Innleggelsestidspunkt [id])+10
+#ymax <- 1000
+
+par(mar=c(10,5,1,1)) 
+plot(rev(Diff_FMK_Innleggelsestidspunkt[id]),ylim=c(0,300),xaxt="n",yaxt="n",xlab="",ylab="Minutter",frame.plot = FALSE,cex.main=1.0)
+lines(rev(Diff_FMK_Innleggelsestidspunkt [id]))
+abline(h=median_Diff_FMK_Innleggelsestidspunkt ,col="red")
+axis(1,at=seq(1,length(Diff_FMK_Innleggelsestidspunkt [id])),labels=rev(Inndato[id]),las=2,cex.axis=1.0)
+axis(2,cex.axis=1.0,las=2)
+text(seq(1,length(Diff_FMK_Innleggelsestidspunkt[id])),rev(Diff_FMK_Innleggelsestidspunkt[id]),labels=rev(Diff_FMK_Innleggelsestidspunkt[id]),pos=3,cex=1.0)
+
+```
+
+Figur 2 viser antall minutter fra første medisinske kontakt (FMK) til innleggelse for pasienter innlagt i perioden `r min(Aar_tertial)` til `r max(Aar_tertial)`. Median antall minutter fra første medisinske kontakt til innleggelse (rød linje) i denne perioden var `r median_Diff_FMK_Innleggelsestidspunkt ` minutter. 
+
+
+## Tid til reperfusjonsbehandling
+
+### Figur 3: Tid fra første medisinske kontakt til prehospital trombolyse
+
+```{r echo=FALSE,warning=FALSE,message=FALSE,fig.width=7, fig.height=7}
+ForsteKontakt <- dt$ForsteKontakt
+ForsteKontakt <- as.POSIXct(ForsteKontakt,format="%d.%m.%Y%H:%M")
+Trombolysetid <- dt$Trombolysetid
+Trombolysetid  <- as.POSIXct(Trombolysetid ,format="%d.%m.%Y%H:%M")
+
+Inndato <- substr(dt$Innleggelsestidspunkt,1,10)
+
+#Kjente tidspunkter og prehospital trombolyse
+id <- which(dt$TidUkjentForsteKontakt==1 & dt$TidUkjentTrombolysetid ==1 & dt$Trombolysebeh==1)[1:50]
+
+Diff_FMK_Trombolysetid  <- as.numeric(difftime(Trombolysetid ,ForsteKontakt,units="mins"))
+
+median_Diff_FMK_Trombolysetid  <- median(Diff_FMK_Trombolysetid[id])
+
+ymax <- max(Diff_FMK_Trombolysetid[id])+10
+
+if(length(id)>0)
+{
+par(mar=c(10,5,1,1)) 
+plot(rev(Diff_FMK_Trombolysetid[id]),ylim=c(0,200),xaxt="n",yaxt="n",xlab="",ylab="Minutter",frame.plot = FALSE,cex.main=1.0)
+lines(rev(Diff_FMK_Trombolysetid[id]))
+abline(h=median_Diff_FMK_Trombolysetid ,col="red")
+abline(h=30 ,col="forestgreen")
+axis(1,at=seq(1,length(Diff_FMK_Trombolysetid[id])),labels=rev(Inndato[id]),las=2,cex.axis=1.0)
+axis(2,cex.axis=1.0,las=2)
+text(seq(1,length(Diff_FMK_Trombolysetid[id])),rev(Diff_FMK_Trombolysetid[id]),labels=rev(Diff_FMK_Trombolysetid[id]),pos=3,cex=1.0)
+
+}
+if(length(id)==0)
+{
+  plot(x = 0:10, y = 0:10, ann = F,bty = "n",type = "n",
+     xaxt = "n", yaxt = "n")
+ 
+text(x = 5,y = 5,"Antall prehospitale trombolyser i aktuell periode er 0",cex=2.7)
+}
+```
+
+Figur 3 viser antall minutter fra første medisinske kontakt (FMK) til prehospital trombolyse for pasienter innlagt i perioden `r min(Aar_tertial)` til `r max(Aar_tertial)`. Median antall minutter fra første medisinske kontakt til trombolyse (rød linje) i denne perioden var `r median_Diff_FMK_Trombolysetid ` minutter. Grønn linje viser anbefalt tidsbruk (30 min) i henhold til Norsk hjerteinfarktregister sine kvalitetsindikatorer for behandling av akutt hjerteinfarkt. 
+
+
+### Figur 4: Tid fra diagnostisk EKG tatt til prehospital trombolyse 
+
+```{r echo=FALSE,warning=FALSE,message=FALSE,fig.width=7, fig.height=7}
+ForsteKontakt <- dt$ForsteKontakt
+ForsteKontakt <- as.POSIXct(ForsteKontakt,format="%d.%m.%Y%H:%M")
+EKG_tidspunkt <- dt$PrehospEkGtid
+EKG_tidspunkt  <- as.POSIXct(EKG_tidspunkt ,format="%d.%m.%Y%H:%M")
+
+Inndato <- substr(dt$Innleggelsestidspunkt,1,10)
+
+#Kjente tidspunkter og prehospital trombolyse
+id <- which(dt$TidUkjentPrehospEkGtid==1 & dt$PrehospEKGLokasjon==1 & dt$TidUkjentTrombolysetid ==1 & dt$Trombolysebeh==1)[1:50]
+
+Diff_EKG_tidspunkt_trombolyse <- as.numeric(difftime(Trombolysetid ,EKG_tidspunkt,units="mins"))
+
+median_Diff_EKG_tidspunkt_trombolyse  <- median(Diff_EKG_tidspunkt_trombolyse[id])
+
+ymax <- max(Diff_EKG_tidspunkt_trombolyse[id])+10
+
+if(length(id)>0)
+{
+  par(mar=c(10,5,1,1)) 
+plot(rev(Diff_EKG_tidspunkt_trombolyse[id]),ylim=c(0,200),xaxt="n",yaxt="n",xlab="",ylab="Minutter",frame.plot = FALSE,cex.main=1.0)
+lines(rev(Diff_EKG_tidspunkt_trombolyse[id]))
+abline(h=median_Diff_EKG_tidspunkt_trombolyse,col="red")
+axis(1,at=seq(1,length(Diff_EKG_tidspunkt_trombolyse[id])),labels=rev(Inndato[id]),las=2,cex.axis=1.0)
+axis(2,cex.axis=1.0,las=2)
+text(seq(1,length(Diff_EKG_tidspunkt_trombolyse[id])),rev(Diff_EKG_tidspunkt_trombolyse[id]),labels=rev(Diff_EKG_tidspunkt_trombolyse[id]),pos=3,cex=1.0)
+}
+if(length(id)==0)
+{
+  plot(x = 0:10, y = 0:10, ann = F,bty = "n",type = "n",
+     xaxt = "n", yaxt = "n")
+ 
+text(x = 5,y = 5,"Antall prehospitale trombolyser i aktuell periode er 0",cex=2.7)
+}
+
+#Sys.setlocale(locale = 'en_NO.UTF-8')
+
+```
+
+Figur 4 viser antall minutter fra diagnostisk EKG tatt til prehospital trombolyse for pasienter innlagt i perioden `r min(Aar_tertial)` til `r max(Aar_tertial)`. Median antall minutter fra diagnostisk EKG tatt til trombolyse (rød linje) i denne perioden var `r median_Diff_EKG_tidspunkt_trombolyse ` minutter. 
+
+
