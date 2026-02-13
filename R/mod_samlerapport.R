@@ -17,6 +17,7 @@ samlerapport_ui <- function(id) {
           label = "Variabel:",
           c("mpg", "disp", "hp", "drat", "wt", "qsec")
         ),
+        uiOutput(ns("velgEnhetSelect")),
         shiny::sliderInput(
           inputId = ns("binsS"),
           label = "Antall grupper:",
@@ -53,13 +54,23 @@ samlerapport_server <- function(id) {
       # Samlerapport
       ## vis
       output$samlerapport <- shiny::renderUI({
+        #shiny::req(input$enhet)
         rapbase::renderRmd(
-          system.file("samlerapport.Rmd", package = "rapRegTemplate"),
+          system.file("samlerapport.Rmd", package = "hjerteinfarkt"),
           outputType = "html_fragment",
           params = list(type = "html",
                         var = input$varS,
                         bins = input$binsS)
         )
+      })
+
+
+      output$velgEnhetSelect <- renderUI({
+
+        # Namespace
+        ns <- session$ns
+        selectizeInput(ns("velgEnhet"), "Velg enhet: ", choices = c("Ahus","Bodø","Bærum","Drammen"), selected = "Ahus")
+
       })
 
       ## last ned
@@ -70,11 +81,12 @@ samlerapport_server <- function(id) {
         },
         content = function(file) {
           srcFile <-
-            normalizePath(system.file("samlerapport.Rmd", package = "rapRegTemplate"))
+            normalizePath(system.file("samlerapport.Rmd", package = "hjerteinfarkt"))
           fn <- rapbase::renderRmd(srcFile, outputType = input$formatS,
                                    params = list(type = input$formatS,
                                                  var = input$varS,
-                                                 bins = input$binsS))
+                                                 bins = input$binsS,
+                                                 enhet=input$enhet))
           file.rename(fn, file)
         }
       )

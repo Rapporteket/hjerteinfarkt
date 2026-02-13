@@ -9,16 +9,15 @@
 
 app_server <- function(input, output, session) {
 
-  # data.frame som mapper ReshID og sykehusnavn
-  map_orgname <- data.frame(
-    UnitId = c(111, 222, 333),
-    orgname = c("Sykehus 1", "Sykehus 2", "Sykehus 3")
-  )
+  org_name <- rapbase::loadRegData("data",query = "SELECT DISTINCT PrimaerSykehus,HealthUnitShortName FROM data;")
+
+  names(org_name) <- c("UnitId","org_name")
+
   user <- rapbase::navbarWidgetServer2(
     "navbar-widget",
     orgName = "pilot",
-    map_orgname = map_orgname,
-    caller = "rapRegTemplate"
+    map_orgname = org_name,
+    caller = "hjerteinfarkt"
   )
 
   meslinger_data <- getFakeRegData()
@@ -40,7 +39,7 @@ app_server <- function(input, output, session) {
 
   rapbase::autoReportServer(
     id = "subscription",
-    registryName = "rapRegTemplate",
+    registryName = "hjerteinfarkt",
     type = "subscription",
     paramNames = subParamNames,
     paramValues = subParamValues,
