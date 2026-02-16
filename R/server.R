@@ -9,9 +9,9 @@
 
 app_server <- function(input, output, session) {
 
-  org_name <- rapbase::loadRegData("data",query = "SELECT DISTINCT PrimaerSykehus,HealthUnitShortName FROM data;")
+  org_name <- rapbase::loadRegData("data", query = "SELECT DISTINCT PrimaerSykehus,HealthUnitShortName FROM data;")
 
-  names(org_name) <- c("UnitId","org_name")
+  names(org_name) <- c("UnitId", "org_name")
 
   user <- rapbase::navbarWidgetServer2(
     "navbar-widget",

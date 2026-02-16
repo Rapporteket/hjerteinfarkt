@@ -6,7 +6,7 @@
 getRegData <- function(reshID) {
 
   # nocov start
-  query <- paste("SELECT * FROM data WHERE PrimaerSykehus=",reshID,";")
+  query <- paste("SELECT * FROM data WHERE PrimaerSykehus=", reshID, ";")
 
 
   rapbase::loadRegData("data", query)
