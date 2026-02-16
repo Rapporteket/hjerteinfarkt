@@ -1,4 +1,4 @@
-#' Server logic for the rapRegTemplate app
+#' Server logic for the hjerteinfarkt app
 #'
 #' @param input shiny input object
 #' @param output shiny output object
@@ -109,7 +109,7 @@ app_server <- function(input, output, session) {
 
   rapbase::autoReportServer(
     id = "dispatchment",
-    registryName = "rapRegTemplate",
+    registryName = "hjerteinfarkt",
     type = "dispatchment",
     org = org$value,
     paramNames = disParamNames,
