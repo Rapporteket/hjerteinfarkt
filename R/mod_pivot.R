@@ -31,16 +31,17 @@ pivot_server <- function(id, user) {
 
       regData <- shiny::reactiveVal(data.frame())
 
-      shiny::observeEvent(user$role(), {
+      shiny::observeEvent(c(user$role(), user$org()), {
         message("user role changed. It's now: ", user$role())
         if ((user$role() %in% c("LC", "SC"))) {
-          regData(getFakeRegData())
+          regData(getRegData(user$org()))
         } else {
           regData(data.frame())
         }
       })
 
       output$pivotSurvey <- rpivotTable::renderRpivotTable({
+        shiny::req(c(user$role(), user$org()))
         rpivotTable::rpivotTable(regData())
       })
     }

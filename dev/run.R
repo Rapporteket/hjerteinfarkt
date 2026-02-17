@@ -1,15 +1,20 @@
 
 
-devtools::install("../rapbase", upgrade = FALSE)
-devtools::install(".", upgrade = FALSE)
-source("dev/renv.R")
+#devtools::install("../rapbase", upgrade = FALSE)
+
+#hver gang man har gjort endringer
+devtools::install(".", upgrade = FALSE) #installerer pakken
+
+
+#Kjør app
+source("dev/renv.R")  #kan slås sammen med den under
+source("dev/renv_mssql.R")
 hjerteinfarkt::run_app(browser = TRUE)
 
 ################
 # MSSQL-greier #
 ################
 
-source("dev/renv_mssql.R")
 hjerteinfarkt::run_app(browser = TRUE)
 
 con <- rapbase::rapOpenDbConnection("autoreport")$con

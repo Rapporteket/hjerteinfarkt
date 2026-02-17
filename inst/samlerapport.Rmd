@@ -1,7 +1,7 @@
 ---
 params:
   type: html_fragment
-  HealthUnitShortName: "Ahus" #Standardverdi
+  enhet: "Ahus" 
   reshID: reshID
   var: mpg
   bins: 5
@@ -35,7 +35,7 @@ abstract: Om rapporten trenger et sammendrag kan det settes inn her
 library(knitr)
 library(kableExtra)
 library(rapbase)
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(echo = FALSE,message=FALSE,warning=FALSE,error = FALSE)
 ```
 
 
@@ -53,9 +53,7 @@ dt <- rapbase::loadRegData("data",query = "SELECT * FROM data WHERE Innleggelses
 
 
 
-
-
-#dt <- dt[which(dt$HealthUnitShortName==params$HealthUnitShortName),]
+dt <- dt[which(dt$HealthUnitShortName==params$enhet),]
 
 #dt <- dt[which(dt$RHF=="Helse Nord"),]
 

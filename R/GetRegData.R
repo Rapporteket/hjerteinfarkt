@@ -3,18 +3,11 @@
 #' @return regData data frame
 #' @export
 
-getRegData <- function() {
+getRegData <- function(reshID) {
 
   # nocov start
-  query <- "
-SELECT
-  AvdRESH AS Avdeling,
-  COUNT(*) AS n
-FROM
-  AlleVarNum
-GROUP BY
-  AvdRESH;
-"
+  query <- paste("SELECT * FROM data WHERE PrimaerSykehus=", reshID, ";")
+
 
   rapbase::loadRegData("data", query)
   # nocov end

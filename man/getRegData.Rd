@@ -4,7 +4,7 @@
 \alias{getRegData}
 \title{Provides a dataframe containing data from a registry}
 \usage{
-getRegData()
+getRegData(reshID)
 }
 \value{
 regData data frame

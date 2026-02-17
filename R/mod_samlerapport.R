@@ -17,6 +17,7 @@ samlerapport_ui <- function(id) {
           label = "Variabel:",
           c("mpg", "disp", "hp", "drat", "wt", "qsec")
         ),
+        shiny::uiOutput(ns("velgEnhetSelect")),
         shiny::sliderInput(
           inputId = ns("binsS"),
           label = "Antall grupper:",
@@ -62,6 +63,19 @@ samlerapport_server <- function(id) {
         )
       })
 
+
+      output$velgEnhetSelect <- shiny::renderUI({
+
+        # Namespace
+        ns <- session$ns
+        shiny::selectizeInput(
+          ns("velgEnhet"),
+          "Velg enhet: ",
+          choices = c("Ahus", "Bodø", "Bærum", "Drammen"),
+          selected = "Ahus"
+        )
+      })
+
       ## last ned
       output$downloadSamlerapport <- shiny::downloadHandler(
         filename = function() {
@@ -74,7 +88,8 @@ samlerapport_server <- function(id) {
           fn <- rapbase::renderRmd(srcFile, outputType = input$formatS,
                                    params = list(type = input$formatS,
                                                  var = input$varS,
-                                                 bins = input$binsS))
+                                                 bins = input$binsS,
+                                                 enhet = input$enhet))
           file.rename(fn, file)
         }
       )
