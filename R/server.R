@@ -1,4 +1,4 @@
-#' Server logic for the rapRegTemplate app
+#' Server logic for the hjerteinfarkt app
 #'
 #' @param input shiny input object
 #' @param output shiny output object
@@ -9,9 +9,15 @@
 
 app_server <- function(input, output, session) {
 
+<<<<<<< HEAD
   org_name <- rapbase::loadRegData("data",query = "SELECT DISTINCT PrimaerSykehus,HealthUnitShortName FROM data;")
 
   names(org_name) <- c("UnitId","org_name")
+=======
+  org_name <- rapbase::loadRegData("data", query = "SELECT DISTINCT PrimaerSykehus,HealthUnitShortName FROM data;")
+
+  names(org_name) <- c("UnitId", "org_name")
+>>>>>>> e4d2a8169f915a7a5beb30f32548d70e0b744ac5
 
   user <- rapbase::navbarWidgetServer2(
     "navbar-widget",
@@ -109,7 +115,7 @@ app_server <- function(input, output, session) {
 
   rapbase::autoReportServer(
     id = "dispatchment",
-    registryName = "rapRegTemplate",
+    registryName = "hjerteinfarkt",
     type = "dispatchment",
     org = org$value,
     paramNames = disParamNames,

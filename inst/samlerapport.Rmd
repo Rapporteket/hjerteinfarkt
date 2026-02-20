@@ -16,20 +16,7 @@ date: '`r format(Sys.time(), "%d. %B %Y")`'
 abstract: Om rapporten trenger et sammendrag kan det settes inn her
 ---
 
-<!-- --- -->
-<!-- params: -->
-<!--   type: pdf -->
-<!--   var: HealthUnitShortName -->
-<!--   HealthUnitShortName: Ahus -->
-<!--   bins: 5 -->
-<!-- title: STEMI-rapport -->
-<!-- subtitle: en eksempelrapport fra rapRegTemplate -->
-<!-- runtime: shiny -->
-<!-- author: Rapporteket -->
-<!-- reglogo: '`r system.file("logo.png", package = "rapRegTemplate")`' -->
-<!-- regtext: '`r readLines(system.file("shortDescription.txt", package = "rapRegTemplate"))`' -->
-<!-- date: '`r format(Sys.time(), "%d. %B %Y")`' -->
-<!-- --- -->
+
 
 ```{r setup, include=FALSE}
 library(knitr)
@@ -47,15 +34,10 @@ Rapporten er opppdatert med data registrert i registeret per  `r format(Sys.Date
 Tabell 1 viser deskriptive resultater for STEMI-pasientene i opptaksområdet i aktuell periode. 
 
 ```{r eksTab}
-#dt <-  read.csv("I:/STOLAV - Fellesområder/Prosjekter/Norsk hjerteinfarktregister - datadump/Rapporteket/Hjerteinfarkt/data/data_2025-09-06_1317.csv",header=T,sep=";",fileEncoding = "latin1" )
 
 dt <- rapbase::loadRegData("data",query = "SELECT * FROM data WHERE Innleggelsesaar>=2024;")
 
-
-
 dt <- dt[which(dt$HealthUnitShortName==params$enhet),]
-
-#dt <- dt[which(dt$RHF=="Helse Nord"),]
 
 
 ```
@@ -409,7 +391,6 @@ if(length(id)==0)
 text(x = 5,y = 5,"Antall prehospitale trombolyser i aktuell periode er 0",cex=2.7)
 }
 
-#Sys.setlocale(locale = 'en_NO.UTF-8')
 
 ```
 

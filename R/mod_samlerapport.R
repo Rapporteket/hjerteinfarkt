@@ -17,7 +17,11 @@ samlerapport_ui <- function(id) {
           label = "Variabel:",
           c("mpg", "disp", "hp", "drat", "wt", "qsec")
         ),
+<<<<<<< HEAD
         uiOutput(ns("velgEnhetSelect")),
+=======
+        shiny::uiOutput(ns("velgEnhetSelect")),
+>>>>>>> e4d2a8169f915a7a5beb30f32548d70e0b744ac5
         shiny::sliderInput(
           inputId = ns("binsS"),
           label = "Antall grupper:",
@@ -65,18 +69,31 @@ samlerapport_server <- function(id) {
       })
 
 
+<<<<<<< HEAD
       output$velgEnhetSelect <- renderUI({
 
         # Namespace
         ns <- session$ns
         selectizeInput(ns("velgEnhet"), "Velg enhet: ", choices = c("Ahus","Bodø","Bærum","Drammen"), selected = "Ahus")
 
+=======
+      output$velgEnhetSelect <- shiny::renderUI({
+
+        # Namespace
+        ns <- session$ns
+        shiny::selectizeInput(
+          ns("velgEnhet"),
+          "Velg enhet: ",
+          choices = c("Ahus", "Bodø", "Bærum", "Drammen"),
+          selected = "Ahus"
+        )
+>>>>>>> e4d2a8169f915a7a5beb30f32548d70e0b744ac5
       })
 
       ## last ned
       output$downloadSamlerapport <- shiny::downloadHandler(
         filename = function() {
-          basename(tempfile(pattern = "rapRegTemplateSamlerapport",
+          basename(tempfile(pattern = "hjerteinfarktSamlerapport",
                             fileext = paste0(".", input$formatS)))
         },
         content = function(file) {
@@ -86,7 +103,11 @@ samlerapport_server <- function(id) {
                                    params = list(type = input$formatS,
                                                  var = input$varS,
                                                  bins = input$binsS,
+<<<<<<< HEAD
                                                  enhet=input$enhet))
+=======
+                                                 enhet = input$enhet))
+>>>>>>> e4d2a8169f915a7a5beb30f32548d70e0b744ac5
           file.rename(fn, file)
         }
       )
