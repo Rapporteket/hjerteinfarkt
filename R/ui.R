@@ -5,7 +5,7 @@
 
 app_ui <- function() {
 
-  regTitle <- "hjerteinfarkt"
+  regTitle <- "Norsk hjerteinfarktregister"
 
   shiny::tagList(
     shiny::navbarPage(
@@ -29,6 +29,10 @@ app_ui <- function() {
       shiny::tabPanel(
         "Samlerapport",
         samlerapport_ui("samlerapport")
+      ),
+      shiny::tabPanel(
+        "Tertialapport",
+        tertialrapport_ui("tertialrapport")
       ),
       shiny::tabPanel(
         "Pivot-tabell",

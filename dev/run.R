@@ -18,8 +18,9 @@ hjerteinfarkt::run_app(browser = TRUE)
 hjerteinfarkt::run_app(browser = TRUE)
 
 con <- rapbase::rapOpenDbConnection("autoreport")$con
-
 conf <- rapbase:::getDbConfig("autoreport")
+
+
 
 install.packages("odbc")
 con <- DBI::dbConnect(

@@ -37,10 +37,8 @@ Tabell 1 viser deskriptive resultater for STEMI-pasientene i opptaksområdet i a
 dt <- rapbase::loadRegData("data",query = "SELECT * FROM data WHERE Innleggelsesaar>=2024;")
 
 
-
 dt <- dt[which(dt$HealthUnitShortName==params$enhet),]
 
-#dt <- dt[which(dt$RHF=="Helse Nord"),]
 
 
 ```
@@ -50,12 +48,9 @@ dt <- dt[which(dt$HealthUnitShortName==params$enhet),]
 ```{r echo=FALSE}
 
 
-
-#sortere dump
 Innleggelsestidspunkt  <- as.POSIXct(dt$Innleggelsestidspunkt ,format="%d.%m.%Y%H:%M")
 dt <- dt[order(Innleggelsestidspunkt,decreasing = TRUE),]
 
-#Sykehus
 dt <- dt[which(dt$SamletStType==1 & dt$HvorBefantPasientenSeg==1 & dt$Innleggelsesaar>=2024),]
 
 
@@ -83,10 +78,10 @@ for(i in 1:length(Innleggelsesaar))
   }
 }
 
-#Tertial <- rep("1. tertial",length(Innleggelsesaar))
+
 
  Aar_tertial <- paste(Innleggelsesaar,Tertial,sep=",")
- #table(Aar_tertial)
+
 # 
 # 
  STEMI_tabell <- matrix("",21,length(unique(Aar_tertial)))
@@ -182,9 +177,7 @@ for(i in 1:length(Innleggelsesaar))
  STEMI_tabell[21,] <- Invasivt_Ukjent
  
 # 
-# 
-# 
-# 
+
  kable(STEMI_tabell)
 
 

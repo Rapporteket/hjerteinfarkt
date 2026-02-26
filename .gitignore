@@ -17,5 +17,6 @@ docs/
 *.sas7bdat
 *.rds
 *.RData
+*.pdf
 renv_mssql.R
 
