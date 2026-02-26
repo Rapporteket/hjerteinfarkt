@@ -3,16 +3,11 @@ Type: Package
 Title: Template to be used for Making New Registries at Rapportekt
 Version: 1.2.0
 Authors@R: c(
-    person(given = "Ingrid",
-           family = "Bondevik",
+    person(given = "Kari Krizak",
+           family = "Halle",
            role = c("aut"),
-           email = "ingrid.bondevik@helse-nord.no",
+           email = "kari.krizak.halle@stolav.no.no",
            comment = c(ORCID = "0000-0002-8564-255X")),
-    person(given = "Are",
-           family = "Edvardsen",
-           role = c("aut"),
-           email = "biorakel@gmail.com",
-           comment = c(ORCID = "0000-0002-5210-3656")),
     person(given = "Arnfinn Hykkerud",
            family = "Steindal",
            role = c("aut", "cre"),
