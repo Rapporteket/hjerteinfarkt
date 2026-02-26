@@ -26,6 +26,8 @@ app_server <- function(input, output, session) {
 
   info_server("info", user = user)
   samlerapport_server("samlerapport")
+  tertialrapport_server("tertialrapport")
+
   pivot_server("pivot", user = user)
   mod_fordeling_plot_server("fordeling", data = data_licorice_gargle)
   mod_over_tid_server("over_tid", data = meslinger_data)

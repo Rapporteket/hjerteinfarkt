@@ -1,0 +1,263 @@
+
+---
+title: "Tertialrapport"
+output:
+  pdf_document:
+    latex_engine: xelatex      # Bedre fontstøtte (æøå)
+    number_sections: false
+    toc: false
+  html_document: default       # (valgfritt) full HTML-versjon i tillegg
+params:
+  type: "pdf"
+  var: "mpg"
+  bins: 5
+  enhet: "Ahus"
+header-includes:
+  - \usepackage{booktabs}      # Penere tabeller i PDF
+  - \usepackage{caption}
+  - \captionsetup{font=small}
+---
+
+
+
+<!-- --- -->
+<!-- title: "Tertialrapport" -->
+<!-- output: -->
+<!--   html_fragment: -->
+<!--     toc: false -->
+<!--   pdf_document: default -->
+<!-- params: -->
+<!--   type: "html" -->
+<!--   var: "mpg" -->
+<!--   bins: 5 -->
+<!--   enhet: "Ahus" -->
+<!-- --- -->
+
+
+```{r setup, include=FALSE}
+library(knitr)
+library(kableExtra)
+library(rapbase)
+library(ncar)
+library(dplyr)
+library(stringr)
+library(tidyr)
+
+knitr::opts_chunk$set(echo = FALSE,message=FALSE,warning=FALSE,error = FALSE)
+```
+
+
+# Tertialrapport
+Denne rapporten viser antall skjema registrert per tertial og andel ukjente besvarelser på utvalgte variabler. 
+
+
+## Antall ferdigstilte hoved- og oppfølgingskjema
+
+
+```{r eksTab}
+
+dt <- rapbase::loadRegData("NorskHjerteinfarktregister",query="SELECT * FROM skjema WHERE Innleggelsesaar>=2024;")
+
+#print(enhet)
+
+#dt <- dt[which(dt$HealthUnitShortName==params$enhet),]
+
+HealthUnitShortName <- dt$HealthUnitShortName
+
+# Gjør params$enhet til vektor og normaliser for robust matching
+valgte_enheter <- params$enhet %>% as.character()
+norm <- function(x) x %>% as.character() %>% str_trim() %>% str_to_lower()
+
+dt <- dt %>%
+  mutate(
+    HealthUnitShortName_norm = norm(HealthUnitShortName)
+  ) %>%
+  filter(
+    HealthUnitShortName_norm %in% norm(valgte_enheter)
+  )
+
+#str$params
+
+#UnitId=reshID
+
+#dt <- dt[which(dt$UnitId==104284),]
+
+aar <- sort(unique(dt$Innleggelsesaar),decreasing=FALSE)
+
+Mnd <- as.numeric(substr(dt$Innleggelsestidspunkt,4,5))
+Tertial <- rep(NA,nrow(dt))
+Tertial[which(Mnd<=4)] <- "1. tertial"
+Tertial[which(Mnd>=5 & Mnd<=8)] <- "2. tertial"
+Tertial[which(Mnd>=9)] <- "3. tertial"
+
+Aar_tertial <- paste(dt$Innleggelsesaar,", ",Tertial,sep="")
+
+perioder <- sort(unique(Aar_tertial),decreasing = FALSE)
+
+ tabell <- matrix(NA,6,length(perioder)+1)
+# 
+ tabell[1,] <- c("Skjematype",perioder)
+ tabell[2:6,1] <- c("Hovedskjema"," Primærinnlagt"," Overflyttet fra annen avdeling"," Overflyttet fra annet sykehus","Total") 
+ 
+ for(i in 1:length(perioder))
+ {
+ #Antall hovedskjema
+   tabell[2,i+1] <- length(which(dt$Skjematype=="Hovedskjema" & Aar_tertial==perioder[i]))
+ 
+   #Antall primærinnlagte
+   tabell[3,i+1] <- length(which(dt$Skjematype=="Hovedskjema" & dt$OverflyttetPasient==0 & Aar_tertial==perioder[i]))
+   
+   #Antall overflyttet fra annen avdeling
+   tabell[4,i+1] <- length(which(dt$Skjematype=="Hovedskjema" & dt$OverflyttetPasient==1 & Aar_tertial==perioder[i]))
+   
+   #Antall overflyttet fra annet sykehus
+   tabell[5,i+1] <- length(which(dt$Skjematype=="Hovedskjema" & dt$OverflyttetPasient==2 & Aar_tertial==perioder[i]))
+   
+   #totalt antall skjema
+   tabell[6,i+1] <- length(which(Aar_tertial==perioder[i]))
+   
+   
+ }
+#   
+#kable(tabell)
+ 
+ tabell[1,] <- cell_spec(tabell[1,], bold = TRUE)
+ 
+ kable(tabell, format = "latex",escape=FALSE) %>%
+   kable_styling() %>%
+   column_spec(1, width = "2cm") %>%
+   column_spec(2, width = "2cm") %>%
+   column_spec(3, width = "2cm")
+
+
+
+```
+
+
+## Aktualitet
+
+
+```{r eksFig}
+
+FirstTimeClosed <- as.POSIXct(dt$FirstTimeClosed,format="%d.%m.%Y%H:%M")
+Utreisedato <- as.POSIXct(dt$Utreisedato,format="%d.%m.%Y%H:%M")
+
+diff <- as.numeric(difftime(FirstTimeClosed,Utreisedato,units="days"))
+
+Aktualitet60 <- rep(0,nrow(dt))
+Aktualitet60[which(diff<=60)] <- 1
+
+Andel60 <- rep(NA,length(perioder))
+
+
+for(i in 1:length(perioder))
+{
+  Andel60[i] <- length(which(Aktualitet60==1 & Aar_tertial==perioder[i]))/length(which(Aar_tertial==perioder[i]))
+}
+
+Andel60 <- Round(Andel60*100,1)
+labels60 <- paste(Andel60," %",sep="")
+
+par(mar=c(7,2,2,2))
+plot(Andel60,xaxt="n",yaxt="n",ylab="Andel (%)",xlab=NA,ylim=c(0,100),main="Andel skjema ferdigstilt innen 60 dager etter utskrivelse",cex.main=0.8)
+lines(Andel60)
+axis(1,at=seq(1,length(perioder),1),labels=perioder,las=2)
+axis(2,at=seq(0,100,20),labels=c("0 %","20 %","40 %","60 %","80 %","100 %"),las=2)
+abline(h=70,col="yellow")
+abline(h=90,col="green")
+text(seq(1,length(perioder),1),Andel60,labels=labels60,pos=3,cex=0.8)
+
+
+```
+
+
+## Antall ukjente tidspunkter (primærinnlagte pasienter)
+
+
+```{r eksTab2 }
+
+tabell <- matrix(NA,6,length(perioder)+1)
+
+tabell[1,] <- c("Skjematype",perioder)
+tabell[2:6,1] <- c("Innleggelsestidspunkt første sykehus","Tidspunkt for første medisinske kontakt","Tidspunkt for diagnostisk EKG",
+                    "Tidspunkt for trombolyse","Tidspunkt for symptomdebut") 
+ 
+for(i in 1:length(perioder))
+{
+ #Innleggelsestidspunkt første sykehus
+ tabell[2,i+1] <- length(which(dt$TidUkjentInnleggelsestidspunkt==0 & Aar_tertial==perioder[i] & dt$OverflyttetPasient==0))
+
+ #Tidspunkt for første medisinske kontakt
+ tabell[3,i+1] <- length(which(dt$TidUkjentForsteKontakt==0 & Aar_tertial==perioder[i] & dt$OverflyttetPasient==0))
+
+ #Tidspunkt for diagnostisk EKG
+ tabell[4,i+1] <- length(which(dt$TidUkjentPrehospitaltEkg==0 & Aar_tertial==perioder[i] & dt$OverflyttetPasient==0))
+   
+ #Tidspunkt for trombolyse
+ tabell[5,i+1] <- length(which(dt$TidUkjentTrombolysetid==0 & Aar_tertial==perioder[i] & dt$OverflyttetPasient==0))
+ 
+ #Tidspunkt for symptomdebut
+ tabell[6,i+1] <- length(which( (dt$TidUkjentSymptomdebut==0 & dt$SymptomdebutAntattTid==9) & Aar_tertial==perioder[i] & dt$OverflyttetPasient==0))
+}
+ 
+tabell[1,] <- cell_spec(tabell[1,], bold = TRUE)
+ 
+kable(tabell, format = "latex",escape=FALSE) %>%
+ kable_styling() %>%
+ column_spec(1, width = "2cm") %>%
+ column_spec(2, width = "2cm") %>%
+ column_spec(3, width = "2cm")
+
+```
+
+
+## Antall ukjent- og ikke målt HbA1c/LDL-registreringer (alle pasienter)
+
+
+```{r eksTab3 }
+
+tabell <- matrix(NA,8,length(perioder)+1)
+
+tabell[1,] <- c("Skjematype",perioder)
+tabell[2:8,1] <- c("Tidspunkt for invasiv koronar angiografi","Tidspunkt for PCI","STEMI/NSTEMI","Røykestatus","BMI","Ikke målt HbA1c","Ikke målt LDL") 
+ 
+for(i in 1:length(perioder))
+{
+ #Tidspunkt for invasiv koronar angiografi
+ tabell[2,i+1] <- length(which(dt$TidUkjentInvKunKorAngioTid==0 & Aar_tertial==perioder[i]))
+
+ #Tidspunkt for PCI
+ tabell[3,i+1] <- length(which(dt$TidUkjentInvPCITid==0 & Aar_tertial==perioder[i]))
+
+ #STEMI/NSTEMI
+ tabell[4,i+1] <- length(which(dt$EkgStemiNstemi==9 & Aar_tertial==perioder[i]))
+
+ #Røykestatus
+ tabell[5,i+1] <- length(which(dt$Roeyker==9 & Aar_tertial==perioder[i]))
+
+ #BMI
+ tabell[6,i+1] <- length(which(dt$BMIUkjent==1 & Aar_tertial==perioder[i]))
+
+ #Ikke målt HbA1c
+ tabell[7,i+1] <- length(which(dt$LabHbA1CIkkemalt==1 & Aar_tertial==perioder[i]))
+ 
+ #Ikke målt LDL
+ tabell[8,i+1] <- length(which(dt$LabLDLIkkemalt==1 & Aar_tertial==perioder[i]))
+ 
+}
+ 
+tabell[1,] <- cell_spec(tabell[1,], bold = TRUE)
+ 
+kable(tabell, format = "latex",escape=FALSE) %>%
+ kable_styling() %>%
+ column_spec(1, width = "2cm") %>%
+ column_spec(2, width = "2cm") %>%
+ column_spec(3, width = "2cm")
+
+```
+
+
+
+
+
+
