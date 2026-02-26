@@ -16,20 +16,6 @@ date: '`r format(Sys.time(), "%d. %B %Y")`'
 abstract: Om rapporten trenger et sammendrag kan det settes inn her
 ---
 
-<!-- --- -->
-<!-- params: -->
-<!--   type: pdf -->
-<!--   var: HealthUnitShortName -->
-<!--   HealthUnitShortName: Ahus -->
-<!--   bins: 5 -->
-<!-- title: STEMI-rapport -->
-<!-- subtitle: en eksempelrapport fra rapRegTemplate -->
-<!-- runtime: shiny -->
-<!-- author: Rapporteket -->
-<!-- reglogo: '`r system.file("logo.png", package = "rapRegTemplate")`' -->
-<!-- regtext: '`r readLines(system.file("shortDescription.txt", package = "rapRegTemplate"))`' -->
-<!-- date: '`r format(Sys.time(), "%d. %B %Y")`' -->
-<!-- --- -->
 
 ```{r setup, include=FALSE}
 library(knitr)
@@ -47,15 +33,12 @@ Rapporten er opppdatert med data registrert i registeret per  `r format(Sys.Date
 Tabell 1 viser deskriptive resultater for STEMI-pasientene i opptaksområdet i aktuell periode. 
 
 ```{r eksTab}
-#dt <-  read.csv("I:/STOLAV - Fellesområder/Prosjekter/Norsk hjerteinfarktregister - datadump/Rapporteket/Hjerteinfarkt/data/data_2025-09-06_1317.csv",header=T,sep=";",fileEncoding = "latin1" )
 
 dt <- rapbase::loadRegData("data",query = "SELECT * FROM data WHERE Innleggelsesaar>=2024;")
 
 
-
 dt <- dt[which(dt$HealthUnitShortName==params$enhet),]
 
-#dt <- dt[which(dt$RHF=="Helse Nord"),]
 
 
 ```
@@ -65,12 +48,9 @@ dt <- dt[which(dt$HealthUnitShortName==params$enhet),]
 ```{r echo=FALSE}
 
 
-
-#sortere dump
 Innleggelsestidspunkt  <- as.POSIXct(dt$Innleggelsestidspunkt ,format="%d.%m.%Y%H:%M")
 dt <- dt[order(Innleggelsestidspunkt,decreasing = TRUE),]
 
-#Sykehus
 dt <- dt[which(dt$SamletStType==1 & dt$HvorBefantPasientenSeg==1 & dt$Innleggelsesaar>=2024),]
 
 
@@ -98,10 +78,10 @@ for(i in 1:length(Innleggelsesaar))
   }
 }
 
-#Tertial <- rep("1. tertial",length(Innleggelsesaar))
+
 
  Aar_tertial <- paste(Innleggelsesaar,Tertial,sep=",")
- #table(Aar_tertial)
+
 # 
 # 
  STEMI_tabell <- matrix("",21,length(unique(Aar_tertial)))
@@ -197,9 +177,7 @@ for(i in 1:length(Innleggelsesaar))
  STEMI_tabell[21,] <- Invasivt_Ukjent
  
 # 
-# 
-# 
-# 
+
  kable(STEMI_tabell)
 
 
