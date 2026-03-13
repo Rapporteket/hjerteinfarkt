@@ -9,7 +9,10 @@
 
 app_server <- function(input, output, session) {
 
-  org_name <- rapbase::loadRegData("data", query = "SELECT DISTINCT PrimaerSykehus,HealthUnitShortName FROM data;")
+  org_name <- rapbase::loadRegData("NorskHjerteinfarktregister", query = "SELECT DISTINCT UnitId,HealthUnitShortName FROM hovedskjema_1;")
+
+
+  data <- rapbase::loadRegData("NorskHjerteinfarktregister",query="SELECT * FROM hovedskjema_1 WHERE Innleggelsesaar>=2024;")
 
   names(org_name) <- c("UnitId", "org_name")
 
@@ -29,8 +32,11 @@ app_server <- function(input, output, session) {
   tertialrapport_server("tertialrapport")
 
   pivot_server("pivot", user = user)
+
   mod_fordeling_plot_server("fordeling", data = data_licorice_gargle)
   mod_over_tid_server("over_tid", data = meslinger_data)
+
+  plots_server("plots")
 
   #################
   # Subscriptions #
@@ -48,16 +54,13 @@ app_server <- function(input, output, session) {
     reports = list(
       `Automatisk samlerapport1` = list(
         synopsis = "
-        Automatisk samlerapport1 som inneholder spennende statistikk
-        om pasienter og operasjoner",
+        Tertialrapport",
         fun = "samlerapport1Fun",
         paramNames = c("p1", "p2", "reshID"),
         paramValues = c("Alder", 1, 999999)
       ),
       `Automatisk samlerapport2` = list(
-        synopsis = "Automatisk samlerapport2 som inneholder
-        enda mer spennende statistikk
-        om pasienter og operasjoner, i tillegg til BMI",
+        synopsis = "STEMI rapport",
         fun = "samlerapport2Fun",
         paramNames = c("p1", "p2", "reshID"),
         paramValues = c("BMI", 1, 999999)
@@ -119,16 +122,13 @@ app_server <- function(input, output, session) {
     reports = list(
       `Automatisk samlerapport1` = list(
         synopsis = "
-        Automatisk samlerapport1 som inneholder spennende statistikk
-        om pasienter og operasjoner",
+        Tertialrapport",
         fun = "samlerapport1Fun",
         paramNames = c("p1", "p2", "reshID"),
         paramValues = c("Alder", 1, 999999)
       ),
       `Automatisk samlerapport2` = list(
-        synopsis = "Automatisk samlerapport2 som inneholder
-        enda mer spennende statistikk
-        om pasienter og operasjoner, i tillegg til BMI",
+        synopsis = "STEMI rapport",
         fun = "samlerapport2Fun",
         paramNames = c("p1", "p2", "reshID"),
         paramValues = c("BMI", 1, 999999)

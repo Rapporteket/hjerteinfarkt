@@ -18,14 +18,14 @@ app_ui <- function() {
         info_ui("info"),
         rapbase::navbarWidgetInput("navbar-widget", selectOrganization = TRUE)
       ),
-      shiny::tabPanel(
-        "Fordeling",
-        mod_fordeling_plot_ui("fordeling")
-      ),
-      shiny::tabPanel(
-        "Over tid",
-        mod_over_tid_ui("over_tid")
-      ),
+       shiny::tabPanel(
+         "Kvalitetsindikatorer",
+         plots_ui("plots")
+       ),
+      # shiny::tabPanel(
+      #   "Over tid",
+      #   mod_over_tid_ui("over_tid")
+      # ),
       shiny::tabPanel(
         "Samlerapport",
         samlerapport_ui("samlerapport")

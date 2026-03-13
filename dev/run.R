@@ -1,9 +1,11 @@
+Sys.setlocale(locale = 'en_NO.UTF-8')
 
-
+library(tinytex)
 #devtools::install("../rapbase", upgrade = FALSE)
 
 #hver gang man har gjort endringer
 devtools::install(".", upgrade = FALSE) #installerer pakken
+library(hjerteinfarkt)
 
 
 #Kjør app
@@ -15,23 +17,26 @@ hjerteinfarkt::run_app(browser = TRUE)
 # MSSQL-greier #
 ################
 
-hjerteinfarkt::run_app(browser = TRUE)
+#hjerteinfarkt::run_app(browser = TRUE)
 
-con <- rapbase::rapOpenDbConnection("autoreport")$con
-conf <- rapbase:::getDbConfig("autoreport")
+# con <- rapbase::rapOpenDbConnection("autoreport")$con
+# conf <- rapbase:::getDbConfig("autoreport")
+#
+#
+#
+# install.packages("odbc")
+# con <- DBI::dbConnect(
+#   odbc::odbc(),
+#   driver = "FreeTDS",
+#   database = conf$name,
+#   server = conf$host,
+#   uid = conf$user,
+#   pwd = conf$pass,
+#   port = 1433
+# )
+#
+# con <- DBI::dbDisconnect(con)
+# con <- NULL
+#
 
 
-
-install.packages("odbc")
-con <- DBI::dbConnect(
-  odbc::odbc(),
-  driver = "FreeTDS",
-  database = conf$name,
-  server = conf$host,
-  uid = conf$user,
-  pwd = conf$pass,
-  port = 1433
-)
-
-con <- DBI::dbDisconnect(con)
-con <- NULL

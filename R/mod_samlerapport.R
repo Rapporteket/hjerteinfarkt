@@ -12,19 +12,9 @@ samlerapport_ui <- function(id) {
     shiny::sidebarLayout(
       shiny::sidebarPanel(
         width = 3,
-        shiny::selectInput(
-          inputId = ns("varS"),
-          label = "Variabel:",
-          c("mpg", "disp", "hp", "drat", "wt", "qsec")
-        ),
-        shiny::uiOutput(ns("velgEnhetSelect")),
-        shiny::sliderInput(
-          inputId = ns("binsS"),
-          label = "Antall grupper:",
-          min = 1,
-          max = 10,
-          value = 5
-        ),
+
+        uiOutput(ns("enhetSelect")),
+
         shiny::selectInput(
           inputId = ns("formatS"),
           label = "Velg format for nedlasting:",
@@ -46,53 +36,68 @@ samlerapport_ui <- function(id) {
 #' @return A Shiny app server object
 #' @export
 
-samlerapport_server <- function(id) {
+
+samlerapport_server <- function(id, enhetsvalg = c("Ahus","Arendal","Bodo","Baerum","Diakonhjemmet","Drammen","Elverum","Flekkefjord","Forde","Gjovik",
+                                                   "Hamar","Hammerfest","Haraldsplass","Harstad","Haugesund","Haukeland","Kalnes","Kirkenes","Kongsberg",
+                                                   "Kongsvinger","Kristiansand","Kristiansund","Levanger","Lillehammer","Lofoten","Lovisenberg",
+                                                   "Laerdal","Mo i Rana","Molde","Mosjoen","Namsos","Narvik","Nordfjord","Notodden","Odda","Orkdal",
+                                                   "Ringerike","Sandnessjoen","Skien","St. Olav","Stavanger","Stord","Tromso","Tynset","Tonsberg",
+                                                   "Ullevaal","Vesteraalen","Volda","Voss","Aalesund")) {
   shiny::moduleServer(
     id,
     function(input, output, session) {
+      ns <- session$ns
 
-      # Samlerapport
-      ## vis
-      output$samlerapport <- shiny::renderUI({
-        rapbase::renderRmd(
-          system.file("samlerapport.Rmd", package = "hjerteinfarkt"),
-          outputType = "html_fragment",
-          params = list(type = "html",
-                        var = input$varS,
-                        bins = input$binsS)
-        )
-      })
-
-
-      output$velgEnhetSelect <- shiny::renderUI({
-
-        # Namespace
-        ns <- session$ns
+      # --- Enhet-velger (kan gjøres dynamisk) ---
+      output$enhetSelect <- shiny::renderUI({
         shiny::selectizeInput(
-          ns("velgEnhet"),
-          "Velg enhet: ",
-          choices = c("Ahus", "Bodø", "Bærum", "Drammen"),
-          selected = "Ahus"
+          inputId = ns("enhet"),
+          label  = "Velg enhet:",
+          choices = enhetsvalg,
+          selected = if (length(enhetsvalg)) enhetsvalg[[1]] else NULL,
+          options  = list(placeholder = "Velg enhet...")
         )
       })
 
-      ## last ned
+      # # --- Hovedvisning: render Rmd fragment reaktivt på input ---
+      output$samlerapport <- shiny::renderUI({
+      shiny::req(input$enhet)
+
+      fn <- rapbase::renderRmd(
+        system.file("samlerapport.Rmd", package = "hjerteinfarkt"),
+        outputType = "html_fragment",
+        params = list(type = "html", enhet = input$enhet)
+      )
+
+        shiny::includeHTML(fn)
+      })
+
+
+      # --- Nedlasting: bruker samme parametre ---
       output$downloadSamlerapport <- shiny::downloadHandler(
         filename = function() {
-          basename(tempfile(pattern = "hjerteinfarktSamlerapport",
-                            fileext = paste0(".", input$formatS)))
+          basename(tempfile(
+            pattern = "rapRegTemplateSamlerapport",
+            fileext = paste0(".", input$formatS)
+          ))
         },
         content = function(file) {
-          srcFile <-
-            normalizePath(system.file("samlerapport.Rmd", package = "hjerteinfarkt"))
-          fn <- rapbase::renderRmd(srcFile, outputType = input$formatS,
-                                   params = list(type = input$formatS,
-                                                 var = input$varS,
-                                                 bins = input$binsS,
-                                                 enhet = input$enhet))
+          srcFile <- normalizePath(system.file("samlerapport.Rmd", package = "hjerteinfarkt"))
+          fn <- rapbase::renderRmd(
+            sourceFile = srcFile,
+            outputType = input$formatS,
+            params = list(
+              type = input$formatS,
+              #var  = input$varS,
+              #bins = input$binsS,
+              enhet = input$enhet
+            )
+          )
           file.rename(fn, file)
         }
       )
+
+
     }
   )
 }
