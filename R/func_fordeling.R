@@ -76,7 +76,7 @@ forbered_data_fordeling <- function(data) {
         2 ~ "medium",
         3 ~ "stor"
       )
-    )
+   )
 
   data$preOp_calcBMI_cat <- cut(
     data$preOp_calcBMI,
