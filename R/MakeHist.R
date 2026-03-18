@@ -4,7 +4,6 @@
 #'
 #' @param df dataframe from which output is to be made
 #' @param var string defining which varable in the data frame to use
-#' @param bins numeric vector defining the number of equally large groups
 #' @param makeTable Logical that if TRUE function will return a data frame
 #' containin the bin borders and count within each bin
 #'
