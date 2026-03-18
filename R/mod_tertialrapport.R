@@ -47,12 +47,12 @@ tertialrapport_ui <- function(id) {
 #' @export
 
 
-tertialrapport_server <- function(id, enhetsvalg = c("Ahus","Arendal","Bodo","Baerum","Diakonhjemmet","Drammen","Elverum","Flekkefjord","Forde","Gjovik",
+tertialrapport_server <- function(id, enhetsvalg = c("Ahus","Arendal","Bodø","Bærum","Diakonhjemmet","Drammen","Elverum","Flekkefjord","Førde","Gjøvik",
                                                      "Hamar","Hammerfest","Haraldsplass","Harstad","Haugesund","Haukeland","Kalnes","Kirkenes","Kongsberg",
                                                      "Kongsvinger","Kristiansand","Kristiansund","Levanger","Lillehammer","Lofoten","Lovisenberg",
-                                                     "Laerdal","Mo i Rana","Molde","Mosjoen","Namsos","Narvik","Nordfjord","Notodden","Odda","Orkdal",
-                                                     "Ringerike","Sandnessjoen","Skien","St. Olav","Stavanger","Stord","Tromso","Tynset","Tonsberg",
-                                                     "Ullevaal","Vesteraalen","Volda","Voss","Aalesund")) {
+                                                     "Lærdal","Mo i Rana","Molde","Mosjoen","Namsos","Narvik","Nordfjord","Notodden","Odda","Orkdal",
+                                                     "Rikshospitalet","Ringerike","Sandnessjøen","Skien","St. Olav","Stavanger","Stord","Tromsø","Tynset","Tønsberg",
+                                                     "Ullevål","Vesterålen","Volda","Voss","Ålesund")) {
   shiny::moduleServer(
     id,
     function(input, output, session) {

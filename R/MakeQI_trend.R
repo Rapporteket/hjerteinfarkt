@@ -33,8 +33,20 @@ makeQI_trend <- function(df, var, RHF,erMann,start_dato,slutt_dato)
   }
 
 
+  # --- Parametrisering og konverteringer ---
+  tz_oslo <- "Europe/Oslo"
+
+  # Sikre at dato-argumenter er POSIXct
+  if (!inherits(start_dato, "POSIXct")) {
+    start_dato <- as.POSIXct(start_dato, tz = tz_oslo)
+  }
+  if (!inherits(slutt_dato, "POSIXct")) {
+    slutt_dato <- as.POSIXct(slutt_dato, tz = tz_oslo)
+  }
+
   #Fitrer på dato
-  #df %>%  dplyr::filter(df$Innleggelsestidspunkt >= start_dato & df$Innleggelsestidspunkt <= slutt_dato)
+  Innleggelsestidspunkt  <- as.POSIXct(df$Innleggelsestidspunkt ,format="%Y-%m-%d")
+  df <- df %>%  dplyr::filter(Innleggelsestidspunkt >= start_dato & Innleggelsestidspunkt <= slutt_dato)
 
   ######################################################################################################
   # KiC: Reperfusjonsbehandling innen anbefalt tid ved STEMI

@@ -31,7 +31,8 @@ makeQI_all <- function(df, var, RHF,erMann,start_dato,slutt_dato)
     }
 
   #Fitrer på dato
-  #df %>%  dplyr::filter(df$Innleggelsestidspunkt >= start_dato & df$Innleggelsestidspunkt <= slutt_dato)
+  Innleggelsestidspunkt  <- as.POSIXct(df$Innleggelsestidspunkt ,format="%Y-%m-%d")
+  df <- df %>%  dplyr::filter(Innleggelsestidspunkt >= start_dato & Innleggelsestidspunkt <= slutt_dato)
 
   source("R/Kvalitetsindikatorer/Kvalitetsindikator C.R",local=TRUE)
 
@@ -44,9 +45,6 @@ makeQI_all <- function(df, var, RHF,erMann,start_dato,slutt_dato)
   Teller_D <- sum(Teller)
   Nevner_D <- sum(Nevner)
   Andel_D <- Round(Teller_D/Nevner_D,3)*100
-
-
-
 
     source("R/Kvalitetsindikatorer/Kvalitetsindikator F.R",local=TRUE)
 
@@ -75,7 +73,7 @@ makeQI_all <- function(df, var, RHF,erMann,start_dato,slutt_dato)
     Andel_indikatorer <- c(Andel_I,Andel_H,Andel_G,Andel_F,Andel_D,Andel_C)
 
     par(mfrow=c(1,1),oma=c(2,20,2,2))
-    temp <- barplot(Andel_indikatorer,horiz=TRUE,col="#4292c6",xlim=c(0,100),xaxt="n",border=NA,main="Kvalitetsindikatorer, periode: dato1 - dato2")
+    temp <- barplot(Andel_indikatorer,horiz=TRUE,col="#4292c6",xlim=c(0,100),xaxt="n",border=NA,main="Kvalitetsindikatorer Norsk hjerteinfarktregister")
     axis(1,at=seq(0,100,20),labels=c("0 %","20 %","40 %","60 %","80 %","100 %"))
 
     Indikatorer <- c("I: ACE-hemmer/AII-antagonist","H: Betablokker","G: Lipidsenker","F: Antitrombotisk behandling","D: Koronar utredet ved NSTEMI","C: Reperfusjonsbehandling innen anbefalt tid ved STEMI")

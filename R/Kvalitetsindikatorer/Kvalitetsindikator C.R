@@ -1,5 +1,13 @@
 #Kvalitetsindikator C: Reperfusjonsbehandling innen anbefalt tid ved STEMI
 
+#
+#df <- df[-which(is.na(df$InvPCI)|is.na(df$PrehospEKG)),]
+
+df <- df[which(df$SamletStType==1),]
+
+
+df <- df[-which(is.na(df$InvPCI)),]
+
 
 ################################################################################
 variabelnavn <- colnames(df)
@@ -97,17 +105,17 @@ for(i in 1:length(df$Symptomdebut))
   {
     Symptomdebut_FMK[i] <- 720
   }
-  #EKG gammel variabel
-  #Ukjent FMK , kjent prehosp EKG = EKG-10 min og kjent symptomdebut
-  else if(df$PrehospEKG[i]==1 & df$TidUkjentPrehospitaltEkg[i]==1 & df$TidUkjentSymptomdebut[i]==1) #Diagnostisk EKG tatt prehospitalt
-  {
-    Symptomdebut_FMK[i] <- as.numeric(difftime(PrehospEkGtid[i],Symptomdebut[i],units="mins"))-10
-  }
-  #Ukjent FMK, kjent prehosp EKG = EKG-10 min og antatt sympotmdebut
-  else if(df$PrehospEKG[i]==1 & df$TidUkjentPrehospitaltEkg[i]==1 & df$SymptomdebutAntattTid[i]==1) #Diagnostisk EKG tatt prehospitalt
-  {
-    Symptomdebut_FMK[i] <- 720
-  }
+  # #EKG gammel variabel
+  # #Ukjent FMK , kjent prehosp EKG = EKG-10 min og kjent symptomdebut
+  # else if(df$PrehospEKG[i]==1 & df$TidUkjentPrehospitaltEkg[i]==1 & df$TidUkjentSymptomdebut[i]==1) #Diagnostisk EKG tatt prehospitalt
+  # {
+  #   Symptomdebut_FMK[i] <- as.numeric(difftime(PrehospEkGtid[i],Symptomdebut[i],units="mins"))-10
+  # }
+  # #Ukjent FMK, kjent prehosp EKG = EKG-10 min og antatt sympotmdebut
+  # else if(df$PrehospEKG[i]==1 & df$TidUkjentPrehospitaltEkg[i]==1 & df$SymptomdebutAntattTid[i]==1) #Diagnostisk EKG tatt prehospitalt
+  # {
+  #   Symptomdebut_FMK[i] <- 720
+  # }
 }
 #################################################################################
 #Tid til første reperfusjon
@@ -132,24 +140,24 @@ for(i in 1:length(df$Innleggelsesaar))
     TidTilReperfusjon[i] <-  min(as.numeric(difftime(InvPCITid[i],PrehospEkGtid[i],units="mins")),
                                  as.numeric(difftime(InvKunKorAngioTid[i],PrehospEkGtid[i],units="mins")))
   }
-  #EKG kjent (årene før 2019....)
-  else if(Reperfusjonsbehandling[i]==1 & df$TidUkjentTrombolysetid[i]==1 & df$PrehospEKG[i]==1 & df$TidUkjentPrehospitaltEkg[i]==1)
-  {
-    TidTilReperfusjon[i] <-  as.numeric(difftime(Trombolysetid[i],PrehospEkGtid[i],units="mins"))
-  }
-  else if(Reperfusjonsbehandling[i]==2 & df$TidUkjentInvKunKorAngioTid[i]==1 & df$PrehospEKG[i]==1 & df$TidUkjentPrehospitaltEkg[i]==1)
-  {
-    TidTilReperfusjon[i] <-  as.numeric(difftime(InvKunKorAngioTid[i],PrehospEkGtid[i],units="mins"))
-  }
-  else if(Reperfusjonsbehandling[i]==3 & df$TidUkjentInvPCITid[i]==1 & df$PrehospEKG[i]==1 & TidUkjentPrehospitaltEkg[i]==1)
-  {
-    TidTilReperfusjon[i] <-  as.numeric(difftime(InvPCITid[i],PrehospEkGtid[i],units="mins"))
-  }
-  else if(Reperfusjonsbehandling[i]==4 & TidUkjentInvKunKorAngioTid[i]==1 & TidUkjentInvPCITid[i]==1 & PrehospEKG[i]==1 & TidUkjentPrehospitaltEkg[i]==1)
-  {
-    TidTilReperfusjon[i] <-  min(as.numeric(difftime(InvPCITid[i],PrehospEkGtid[i],units="mins")),
-                                 as.numeric(difftime(InvKunKorAngioTid[i],PrehospEkGtid[i],units="mins")))
-  }
+  # #EKG kjent (årene før 2019....)
+  # else if(Reperfusjonsbehandling[i]==1 & df$TidUkjentTrombolysetid[i]==1 & df$PrehospEKG[i]==1 & df$TidUkjentPrehospitaltEkg[i]==1)
+  # {
+  #   TidTilReperfusjon[i] <-  as.numeric(difftime(Trombolysetid[i],PrehospEkGtid[i],units="mins"))
+  # }
+  # else if(Reperfusjonsbehandling[i]==2 & df$TidUkjentInvKunKorAngioTid[i]==1 & df$PrehospEKG[i]==1 & df$TidUkjentPrehospitaltEkg[i]==1)
+  # {
+  #   TidTilReperfusjon[i] <-  as.numeric(difftime(InvKunKorAngioTid[i],PrehospEkGtid[i],units="mins"))
+  # }
+  # else if(Reperfusjonsbehandling[i]==3 & df$TidUkjentInvPCITid[i]==1 & df$PrehospEKG[i]==1 & TidUkjentPrehospitaltEkg[i]==1)
+  # {
+  #   TidTilReperfusjon[i] <-  as.numeric(difftime(InvPCITid[i],PrehospEkGtid[i],units="mins"))
+  # }
+  # else if(Reperfusjonsbehandling[i]==4 & TidUkjentInvKunKorAngioTid[i]==1 & TidUkjentInvPCITid[i]==1 & PrehospEKG[i]==1 & TidUkjentPrehospitaltEkg[i]==1)
+  # {
+  #   TidTilReperfusjon[i] <-  min(as.numeric(difftime(InvPCITid[i],PrehospEkGtid[i],units="mins")),
+  #                                as.numeric(difftime(InvKunKorAngioTid[i],PrehospEkGtid[i],units="mins")))
+  # }
 
 
 

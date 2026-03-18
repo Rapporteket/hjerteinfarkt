@@ -14,7 +14,7 @@ plots_ui <- function(id) {
           shiny::selectInput(
             inputId = ns("var"),
             label = "Kvalitetsindikator:",
-            choices = c("KiC","KiF","KiG","KiH","KiI")
+            choices = c("KiC","KiD","KiF","KiG","KiH","KiI")
           ),
 
           shiny::selectInput(
@@ -161,7 +161,7 @@ plots_server <- function(id, data) {
 
       output$distPlot <- renderPlot({
         req(data, input$var)
-        makeQI(df = data, var = input$var,RHF=input$RHF,erMann=input$erMann,start_dato=input$datovalgGjsn[1],slutt_dato =input$datovalgGjsn[2])
+        makeQI(df = data, var = input$var,RHF=input$RHF,erMann=input$erMann,Innleggelsesaar==input$Innleggelsesaar)
       })
 
       output$tekst_over <- renderUI({
