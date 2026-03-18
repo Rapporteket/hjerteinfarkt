@@ -22,8 +22,3 @@ a graphical object or data frame
 \description{
 Short demo on how to produce dynamic content in a shiny app at Rapporteket
 }
-\examples{
-makeHist(df = mtcars, var = "mpg", bins = 5, makeTable = FALSE)
-
-
-}

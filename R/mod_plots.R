@@ -1,7 +1,6 @@
 #' Shiny module providing GUI and server logic for the plot tab
 #'
 #' @param id Character string module namespace
-NULL
 
 plots_ui <- function(id) {
   ns <- shiny::NS(id)
