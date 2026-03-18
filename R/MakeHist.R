@@ -11,12 +11,6 @@
 #' @return a graphical object or data frame
 #' @export
 #'
-#' @examples
-#' makeHist(df = mtcars, var = "mpg", bins = 5, makeTable = FALSE)
-#'
-#'
-
-
 makeHist <- function(df, var, makeTable = FALSE)
 {
    ######################################################################################################
