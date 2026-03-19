@@ -31,7 +31,6 @@ Imports:
     shiny,
     shinyalert,
     tidyverse,
-    magrittr,
     ncar
 Remotes:
   Rapporteket/rapbase@main
