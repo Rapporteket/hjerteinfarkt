@@ -62,13 +62,13 @@ dt <- rapbase::loadRegData(query=paste("SELECT * FROM hovedskjema_1 WHERE Innleg
 HealthUnitShortName <- dt$HealthUnitShortName
 
 # Gjør params$enhet til vektor og normaliser for robust matching
-valgte_enheter <- params$enhet %>% as.character()
-norm <- function(x) x %>% as.character() %>% str_trim() %>% str_to_lower()
+valgte_enheter <- params$enhet |> as.character()
+norm <- function(x) x |> as.character() |> str_trim() |> str_to_lower()
 
-dt <- dt %>%
+dt <- dt |>
   mutate(
     HealthUnitShortName_norm = norm(HealthUnitShortName)
-  ) %>%
+  ) |>
   filter(
     HealthUnitShortName_norm %in% norm(valgte_enheter)
   )
@@ -115,12 +115,15 @@ perioder <- sort(unique(Aar_tertial),decreasing = FALSE)
  
  tabell[1,] <- cell_spec(tabell[1,], bold = TRUE)
  
- kable(tabell, format = "html",escape=FALSE) %>%
-   kable_styling() %>%
-   column_spec(1, width = "2cm") %>%
-   column_spec(2, width = "2cm") %>%
-   column_spec(3, width = "2cm") %>%
-   column_spec(4, width = "2cm")
+ kable(tabell, format = "html",escape=FALSE) |>
+   kable_styling() |>
+   column_spec(1, width = "2cm") |>
+   column_spec(2, width = "2cm") |>
+   column_spec(3, width = "2cm") |>
+   column_spec(4, width = "2cm") |>
+   column_spec(5, width = "2cm") |>
+   column_spec(6, width = "2cm") |>
+   column_spec(7, width = "2cm")
 
 
 ```
@@ -195,12 +198,15 @@ for(i in 1:length(perioder))
  
 tabell[1,] <- cell_spec(tabell[1,], bold = TRUE)
  
-kable(tabell, format = "html",escape=FALSE) %>%
- kable_styling() %>%
- column_spec(1, width = "2cm") %>%
- column_spec(2, width = "2cm") %>%
- column_spec(3, width = "2cm") %>%
- column_spec(4, width = "2cm")
+kable(tabell, format = "html",escape=FALSE) |>
+ kable_styling() |>
+ column_spec(1, width = "2cm") |>
+ column_spec(2, width = "2cm") |>
+ column_spec(3, width = "2cm") |>
+ column_spec(4, width = "2cm") |>
+ column_spec(5, width = "2cm") |>
+ column_spec(6, width = "2cm") |>
+ column_spec(7, width = "2cm")
 
 ```
 
@@ -242,12 +248,15 @@ for(i in 1:length(perioder))
  
 tabell[1,] <- cell_spec(tabell[1,], bold = TRUE)
  
-kable(tabell, format = "html",escape=FALSE) %>%
- kable_styling() %>%
- column_spec(1, width = "2cm") %>%
- column_spec(2, width = "2cm") %>%
- column_spec(3, width = "2cm") %>%
- column_spec(4, width = "2cm")
+kable(tabell, format = "html",escape=FALSE) |>
+ kable_styling() |>
+ column_spec(1, width = "2cm") |>
+ column_spec(2, width = "2cm") |>
+ column_spec(3, width = "2cm") |>
+ column_spec(4, width = "2cm") |>
+ column_spec(5, width = "2cm") |>
+ column_spec(6, width = "2cm") |>
+ column_spec(7, width = "2cm")
 
 ```
 
