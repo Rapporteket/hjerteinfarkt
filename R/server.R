@@ -9,10 +9,10 @@
 
 app_server <- function(input, output, session) {
 
-  org_name <- rapbase::loadRegData("NorskHjerteinfarktregister", query = "SELECT DISTINCT UnitId,HealthUnitShortName FROM hovedskjema_1;")
+  org_name <- rapbase::loadRegData(query = "SELECT DISTINCT UnitId,HealthUnitShortName FROM hovedskjema_1;")
 
 
-  data <- rapbase::loadRegData("NorskHjerteinfarktregister",query="SELECT * FROM hovedskjema_1 WHERE Innleggelsesaar>=2024;")
+  data <- rapbase::loadRegData(query="SELECT * FROM hovedskjema_1 WHERE Innleggelsesaar>=2024;")
 
   names(org_name) <- c("UnitId", "org_name")
 
