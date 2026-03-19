@@ -56,8 +56,7 @@ Denne rapporten viser antall skjema registrert per tertial og andel ukjente besv
 
 ```{r eksTab}
 
-#dt <- rapbase::loadRegData("NorskHjerteinfarktregister",query=paste("SELECT * FROM hovedskjema_1 WHERE Innleggelsesaar>=2024 AND UnitId=", reshID,";"))
-dt <- rapbase::loadRegData("NorskHjerteinfarktregister",query=paste("SELECT * FROM hovedskjema_1 WHERE Innleggelsesaar>=2024;"))
+dt <- rapbase::loadRegData(query=paste("SELECT * FROM hovedskjema_1 WHERE Innleggelsesaar>=2024;"))
 
 
 HealthUnitShortName <- dt$HealthUnitShortName

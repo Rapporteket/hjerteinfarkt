@@ -21,11 +21,11 @@ plots_ui <- function(id) {
             label = "Regionalt helseforetak:",
             choices = c("Alle", "Helse Midt-Norge", "Helse Vest", "Helse Sør-Øst", "Helse Nord")
           ),
-          shiny::selectInput(
-            inputId = ns("HF"),
-            label = "Helseforetak:",
-            choices = c("Alle", "Akershus universitetssykehus HF","St. Olavs hospital HF")
-          ),
+          # shiny::selectInput(
+          #   inputId = ns("HF"),
+          #   label = "Helseforetak:",
+          #   choices = c("Alle", "Akershus universitetssykehus HF","St. Olavs hospital HF")
+          # ),
           shiny::selectInput(
             inputId = ns("erMann"),
             label = "Kjønn",
@@ -137,7 +137,7 @@ plots_server <- function(id, data) {
     id,
     function(input, output, session) {
 
-      regData <- rapbase::loadRegData("NorskHjerteinfarktregister",query="SELECT * FROM pasientforlop_3;")
+      regData <- rapbase::loadRegData(query="SELECT * FROM pasientforlop_3;")
       data <- regData
 
       data$RHF[which(regData$RHF=="Helse SÃ¸r-Ã\u0098st")] <- "Helse Sør-Øst"
@@ -160,7 +160,7 @@ plots_server <- function(id, data) {
 
       output$distPlot <- renderPlot({
         req(data, input$var)
-        makeQI(df = data, var = input$var,RHF=input$RHF,erMann=input$erMann,Innleggelsesaar==input$Innleggelsesaar)
+        makeQI(df = data, var = input$var,RHF=input$RHF,erMann=input$erMann,start_dato=input$datovalgGjsn[1],slutt_dato =input$datovalgGjsn[2])
       })
 
       output$tekst_over <- renderUI({
@@ -223,7 +223,7 @@ plots_server2 <- function(id) {
     function(input, output, session) {
 
       # Last inn data
-      regData <- rapbase::loadRegData("NorskHjerteinfarktregister",query="SELECT * FROM pasientforlop_3;")
+      regData <- rapbase::loadRegData(query="SELECT * FROM pasientforlop_3;")
       regData$RHF[which(regData$RHF=="Helse SÃ¸r-Ã\u0098st")] <- "Helse Sør-Øst"
 
       # Figur og tabell
