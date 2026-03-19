@@ -40,7 +40,7 @@ makeQI_trend <- function(df, var, RHF,erMann,start_dato,slutt_dato)
 
   #Fitrer på dato
   Innleggelsestidspunkt  <- as.POSIXct(df$Innleggelsestidspunkt ,format="%Y-%m-%d")
-  df <- df %>%  dplyr::filter(Innleggelsestidspunkt >= start_dato & Innleggelsestidspunkt <= slutt_dato)
+  df <- df |>  dplyr::filter(Innleggelsestidspunkt >= start_dato & Innleggelsestidspunkt <= slutt_dato)
 
   ######################################################################################################
   # KiC: Reperfusjonsbehandling innen anbefalt tid ved STEMI
