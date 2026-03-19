@@ -1,7 +1,7 @@
 Package: hjerteinfarkt
 Type: Package
 Title: Template to be used for Making New Registries at Rapportekt
-Version: 1.2.0
+Version: 0.1.0
 Authors@R: c(
     person(given = "Kari Krizak",
            family = "Halle",
