@@ -29,7 +29,9 @@ Imports:
     rlang,
     rpivotTable,
     shiny,
-    shinyalert
+    shinyalert,
+    tidyverse,
+    ncar
 Remotes:
   Rapporteket/rapbase@main
 License: GPL-3
