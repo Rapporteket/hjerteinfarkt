@@ -33,7 +33,7 @@ Denne rapporten viser resultater for STEMI-pasienter som har bostedsadresse i op
 
 ```{r eksTab,echo=FALSE}
 
-dt <- rapbase::loadRegData("NorskHjerteinfarktregister",query="SELECT * FROM pasientforlop_3;")
+dt <- rapbase::loadRegData(query="SELECT * FROM pasientforlop_3 WHERE Innleggelsesaar>=2025;")
 
 
 #Opptaksområder
