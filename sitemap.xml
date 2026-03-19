@@ -16,7 +16,10 @@
 <url><loc>/reference/lag_fordeling_plot.html</loc></url>
 <url><loc>/reference/lag_fordeling_tabell.html</loc></url>
 <url><loc>/reference/makeHist.html</loc></url>
-<url><loc>/reference/makeSimpleHist.html</loc></url>
+<url><loc>/reference/makeQI.html</loc></url>
+<url><loc>/reference/makeQI_all.html</loc></url>
+<url><loc>/reference/makeQI_table.html</loc></url>
+<url><loc>/reference/makeQI_trend.html</loc></url>
 <url><loc>/reference/mod_fordeling_plot_UI.html</loc></url>
 <url><loc>/reference/mod_fordeling_plot_server.html</loc></url>
 <url><loc>/reference/mod_over_tid_UI.html</loc></url>
