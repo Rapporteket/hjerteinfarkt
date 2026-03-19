@@ -6,10 +6,10 @@
 getRegData <- function(reshID) {
 
   # nocov start
-  query <- paste("SELECT * FROM data WHERE PrimaerSykehus=", reshID, ";")
+  query <- paste("SELECT * FROM hovedskjema_1 WHERE UnitId=", reshID, ";")
 
 
-  rapbase::loadRegData("data", query)
+  rapbase::loadRegData("NorskHjerteinfarktregister", query)
   # nocov end
 
 }

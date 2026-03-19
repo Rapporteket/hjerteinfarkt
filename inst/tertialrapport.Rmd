@@ -1,23 +1,23 @@
-
 ---
 title: "Tertialrapport"
 output:
   pdf_document:
-    latex_engine: xelatex      # Bedre fontstøtte (æøå)
+    latex_engine: xelatex
     number_sections: false
     toc: false
-  html_document: default       # (valgfritt) full HTML-versjon i tillegg
+  html_document:
+    toc: false
 params:
-  type: "pdf"
+  type: "pdf"        # Shiny vil overskrive denne
   var: "mpg"
   bins: 5
   enhet: "Ahus"
+  reshID: 104204
 header-includes:
-  - \usepackage{booktabs}      # Penere tabeller i PDF
+  - \usepackage{booktabs}
   - \usepackage{caption}
   - \captionsetup{font=small}
 ---
-
 
 
 <!-- --- -->
@@ -56,11 +56,9 @@ Denne rapporten viser antall skjema registrert per tertial og andel ukjente besv
 
 ```{r eksTab}
 
-dt <- rapbase::loadRegData("NorskHjerteinfarktregister",query="SELECT * FROM skjema WHERE Innleggelsesaar>=2024;")
+#dt <- rapbase::loadRegData("NorskHjerteinfarktregister",query=paste("SELECT * FROM hovedskjema_1 WHERE Innleggelsesaar>=2024 AND UnitId=", reshID,";"))
+dt <- rapbase::loadRegData("NorskHjerteinfarktregister",query=paste("SELECT * FROM hovedskjema_1 WHERE Innleggelsesaar>=2024;"))
 
-#print(enhet)
-
-#dt <- dt[which(dt$HealthUnitShortName==params$enhet),]
 
 HealthUnitShortName <- dt$HealthUnitShortName
 
@@ -76,15 +74,10 @@ dt <- dt %>%
     HealthUnitShortName_norm %in% norm(valgte_enheter)
   )
 
-#str$params
-
-#UnitId=reshID
-
-#dt <- dt[which(dt$UnitId==104284),]
 
 aar <- sort(unique(dt$Innleggelsesaar),decreasing=FALSE)
 
-Mnd <- as.numeric(substr(dt$Innleggelsestidspunkt,4,5))
+Mnd <- as.numeric(substr(dt$Innleggelsestidspunkt,6,7))
 Tertial <- rep(NA,nrow(dt))
 Tertial[which(Mnd<=4)] <- "1. tertial"
 Tertial[which(Mnd>=5 & Mnd<=8)] <- "2. tertial"
@@ -123,12 +116,12 @@ perioder <- sort(unique(Aar_tertial),decreasing = FALSE)
  
  tabell[1,] <- cell_spec(tabell[1,], bold = TRUE)
  
- kable(tabell, format = "latex",escape=FALSE) %>%
+ kable(tabell, format = "html",escape=FALSE) %>%
    kable_styling() %>%
    column_spec(1, width = "2cm") %>%
    column_spec(2, width = "2cm") %>%
-   column_spec(3, width = "2cm")
-
+   column_spec(3, width = "2cm") %>%
+   column_spec(4, width = "2cm")
 
 
 ```
@@ -139,8 +132,9 @@ perioder <- sort(unique(Aar_tertial),decreasing = FALSE)
 
 ```{r eksFig}
 
-FirstTimeClosed <- as.POSIXct(dt$FirstTimeClosed,format="%d.%m.%Y%H:%M")
-Utreisedato <- as.POSIXct(dt$Utreisedato,format="%d.%m.%Y%H:%M")
+
+FirstTimeClosed <- as.POSIXct(dt$FirstTimeClosed,format="%Y-%m-%d%H:%M")
+Utreisedato <- as.POSIXct(dt$Utreisedato,format="%Y-%m-%Y%H:%M")
 
 diff <- as.numeric(difftime(FirstTimeClosed,Utreisedato,units="days"))
 
@@ -202,11 +196,12 @@ for(i in 1:length(perioder))
  
 tabell[1,] <- cell_spec(tabell[1,], bold = TRUE)
  
-kable(tabell, format = "latex",escape=FALSE) %>%
+kable(tabell, format = "html",escape=FALSE) %>%
  kable_styling() %>%
  column_spec(1, width = "2cm") %>%
  column_spec(2, width = "2cm") %>%
- column_spec(3, width = "2cm")
+ column_spec(3, width = "2cm") %>%
+ column_spec(4, width = "2cm")
 
 ```
 
@@ -248,11 +243,12 @@ for(i in 1:length(perioder))
  
 tabell[1,] <- cell_spec(tabell[1,], bold = TRUE)
  
-kable(tabell, format = "latex",escape=FALSE) %>%
+kable(tabell, format = "html",escape=FALSE) %>%
  kable_styling() %>%
  column_spec(1, width = "2cm") %>%
  column_spec(2, width = "2cm") %>%
- column_spec(3, width = "2cm")
+ column_spec(3, width = "2cm") %>%
+ column_spec(4, width = "2cm")
 
 ```
 

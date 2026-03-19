@@ -12,19 +12,19 @@ tertialrapport_ui <- function(id) {
     shiny::sidebarLayout(
       shiny::sidebarPanel(
         width = 3,
-        shiny::selectInput(
-          inputId = ns("varS"),
-          label = "Variabel:",
-          c("mpg", "disp", "hp", "drat", "wt", "qsec")
-        ),
+        # shiny::selectInput(
+        #   inputId = ns("varS"),
+        #   label = "Variabel:",
+        #   c("mpg", "disp", "hp", "drat", "wt", "qsec")
+        # ),
         uiOutput(ns("enhetSelect")),
-        shiny::sliderInput(
-          inputId = ns("binsS"),
-          label = "Antall grupper:",
-          min = 1,
-          max = 10,
-          value = 5
-        ),
+        # shiny::sliderInput(
+        #   inputId = ns("binsS"),
+        #   label = "Antall grupper:",
+        #   min = 1,
+        #   max = 10,
+        #   value = 5
+        # ),
         shiny::selectInput(
           inputId = ns("formatS"),
           label = "Velg format for nedlasting:",
@@ -47,7 +47,12 @@ tertialrapport_ui <- function(id) {
 #' @export
 
 
-tertialrapport_server <- function(id, enhetsvalg = c("Ahus","Arendal","Drammen","Elverum","Haukeland","Rikshospitalet","St. Olav")) {
+tertialrapport_server <- function(id, enhetsvalg = c("Ahus","Arendal","Bodø","Bærum","Diakonhjemmet","Drammen","Elverum","Flekkefjord","Førde","Gjøvik",
+                                                     "Hamar","Hammerfest","Haraldsplass","Harstad","Haugesund","Haukeland","Kalnes","Kirkenes","Kongsberg",
+                                                     "Kongsvinger","Kristiansand","Kristiansund","Levanger","Lillehammer","Lofoten","Lovisenberg",
+                                                     "Lærdal","Mo i Rana","Molde","Mosjoen","Namsos","Narvik","Nordfjord","Notodden","Odda","Orkdal",
+                                                     "Rikshospitalet","Ringerike","Sandnessjøen","Skien","St. Olav","Stavanger","Stord","Tromsø","Tynset","Tønsberg",
+                                                     "Ullevål","Vesterålen","Volda","Voss","Ålesund")) {
   shiny::moduleServer(
     id,
     function(input, output, session) {
@@ -66,15 +71,17 @@ tertialrapport_server <- function(id, enhetsvalg = c("Ahus","Arendal","Drammen",
 
       # # --- Hovedvisning: render Rmd fragment reaktivt på input ---
              output$tertialrapport <- shiny::renderUI({
-               shiny::req(input$enhet, input$varS, input$binsS)
+               #shiny::req(input$enhet, input$varS, input$binsS)
+               shiny::req(input$enhet)
                rapbase::renderRmd(
                  system.file("tertialrapport.Rmd", package = "hjerteinfarkt"),
-                 #outputType = "html_fragment",
-                 outputType = "pdf",
-                 params = list(type = "pdf",
-                 #params = list(type = "html",
-                               var = input$varS,
-                               bins = input$binsS,enhet=input$enhet)
+                 outputType = "html_fragment",
+                 #outputType = "pdf",
+                 #params = list(type = "pdf",
+                 params = list(type = "html",
+                               #var = input$varS,
+                               #bins = input$binsS,
+                               enhet=input$enhet)
                )
              })
 
@@ -82,19 +89,19 @@ tertialrapport_server <- function(id, enhetsvalg = c("Ahus","Arendal","Drammen",
       output$downloadSamlerapport <- shiny::downloadHandler(
         filename = function() {
           basename(tempfile(
-            pattern = "rapRegTemplateSamlerapport",
+            pattern = "hjerteinfarktSamlerapport",
             fileext = paste0(".", input$formatS)
           ))
         },
         content = function(file) {
           srcFile <- normalizePath(system.file("tertialrapport.Rmd", package = "hjerteinfarkt"))
           fn <- rapbase::renderRmd(
-            file = srcFile,
+            sourceFile = srcFile,
             outputType = input$formatS,
             params = list(
               type = input$formatS,
-              var  = input$varS,
-              bins = input$binsS,
+              #var  = input$varS,
+              #bins = input$binsS,
               enhet = input$enhet
             )
           )

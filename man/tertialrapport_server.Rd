@@ -6,8 +6,15 @@
 \usage{
 tertialrapport_server(
   id,
-  enhetsvalg = c("Ahus", "Arendal", "Drammen", "Elverum", "Haukeland", "Rikshospitalet",
-    "St. Olav")
+  enhetsvalg = c("Ahus", "Arendal", "Bodø", "Bærum", "Diakonhjemmet", "Drammen",
+    "Elverum", "Flekkefjord", "Førde", "Gjøvik", "Hamar", "Hammerfest", "Haraldsplass",
+    "Harstad", "Haugesund", "Haukeland", "Kalnes", "Kirkenes", "Kongsberg",
+    "Kongsvinger", "Kristiansand", "Kristiansund", "Levanger", "Lillehammer", "Lofoten",
+    "Lovisenberg", "Lærdal", "Mo i Rana", "Molde", "Mosjoen", "Namsos", "Narvik",
+    "Nordfjord", "Notodden", "Odda", "Orkdal", "Rikshospitalet", "Ringerike",
+    "Sandnessjøen", "Skien", "St. Olav", 
+     "Stavanger", "Stord", "Tromsø",
+    "Tynset", "Tønsberg", "Ullevål", "Vesterålen", "Volda", "Voss", "Ålesund")
 )
 }
 \value{
