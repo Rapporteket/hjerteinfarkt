@@ -31,7 +31,7 @@ app_ui <- function() {
         samlerapport_ui("samlerapport")
       ),
       shiny::tabPanel(
-        "Tertialapport",
+        "Tertialrapport",
         tertialrapport_ui("tertialrapport")
       ),
       shiny::tabPanel(

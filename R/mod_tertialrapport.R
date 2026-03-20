@@ -12,23 +12,11 @@ tertialrapport_ui <- function(id) {
     shiny::sidebarLayout(
       shiny::sidebarPanel(
         width = 3,
-        # shiny::selectInput(
-        #   inputId = ns("varS"),
-        #   label = "Variabel:",
-        #   c("mpg", "disp", "hp", "drat", "wt", "qsec")
-        # ),
         uiOutput(ns("enhetSelect")),
-        # shiny::sliderInput(
-        #   inputId = ns("binsS"),
-        #   label = "Antall grupper:",
-        #   min = 1,
-        #   max = 10,
-        #   value = 5
-        # ),
         shiny::selectInput(
           inputId = ns("formatS"),
           label = "Velg format for nedlasting:",
-          choices = list(PDF = "pdf", HTML = "html")
+          choices = list(HTML = "html", PDF = "pdf")
         ),
         shiny::downloadButton(
           outputId = ns("downloadSamlerapport"),
@@ -79,8 +67,6 @@ tertialrapport_server <- function(id, enhetsvalg = c("Ahus","Arendal","Bodø","B
                  #outputType = "pdf",
                  #params = list(type = "pdf",
                  params = list(type = "html",
-                               #var = input$varS,
-                               #bins = input$binsS,
                                enhet=input$enhet)
                )
              })
@@ -100,8 +86,6 @@ tertialrapport_server <- function(id, enhetsvalg = c("Ahus","Arendal","Bodø","B
             outputType = input$formatS,
             params = list(
               type = input$formatS,
-              #var  = input$varS,
-              #bins = input$binsS,
               enhet = input$enhet
             )
           )
