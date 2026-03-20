@@ -137,7 +137,7 @@ plots_server <- function(id, data) {
     id,
     function(input, output, session) {
 
-      regData <- rapbase::loadRegData(query="SELECT * FROM pasientforlop_3;")
+      regData  <- rapbase::loadRegData(query=paste("SELECT * FROM pasientforlop_3 WHERE Innleggelsesaar>=2013;"))
       data <- regData
 
       data$RHF[which(regData$RHF=="Helse SÃ¸r-Ã\u0098st")] <- "Helse Sør-Øst"

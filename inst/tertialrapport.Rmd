@@ -154,14 +154,14 @@ for(i in 1:length(perioder))
 Andel60 <- Round(Andel60*100,1)
 labels60 <- paste(Andel60," %",sep="")
 
-par(mar=c(7,2,2,2))
+par(mar=c(7,5,2,2))
 plot(Andel60,xaxt="n",yaxt="n",ylab="Andel (%)",xlab=NA,ylim=c(0,100),main="Andel skjema ferdigstilt innen 60 dager etter utskrivelse",cex.main=0.8)
 lines(Andel60)
 axis(1,at=seq(1,length(perioder),1),labels=perioder,las=2)
 axis(2,at=seq(0,100,20),labels=c("0 %","20 %","40 %","60 %","80 %","100 %"),las=2)
 abline(h=70,col="yellow")
 abline(h=90,col="green")
-text(seq(1,length(perioder),1),Andel60,labels=labels60,pos=3,cex=0.8)
+text(seq(1,length(perioder),1),Andel60,labels=labels60,pos=1,cex=0.8)
 
 
 ```
