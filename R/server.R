@@ -138,5 +138,37 @@ app_server <- function(input, output, session) {
     user = user
   )
 
+  ##########
+  # Export #
+  ##########
 
+  shiny::observeEvent(
+    shiny::req(user$role()), {
+      if (user$role() != "SC") {
+        shiny::removeTab("tabs", target = "Eksport")
+      } else {
+        message("Adding dispatchment tab for user with role ", user$role())
+        shiny::insertTab(
+          "tabs",
+          shiny::tabPanel(
+            "Eksport",
+            shiny::sidebarLayout(
+              shiny::sidebarPanel(
+                rapbase::exportUCInput("export")
+              ),
+              shiny::mainPanel(
+                rapbase::exportGuideUI("exportGuide")
+              )
+            )
+          ),
+          target = "Pivot-tabell",
+          position = "after"
+        )
+      }
+    }
+  )
+  ## brukerkontroller
+  rapbase::exportUCServer(id = "export", dbName = "data", teamName = "hjerteinfarkt")
+  ## veileding
+  rapbase::exportGuideServer("exportGuide", "hjerteinfarkt")
 }
