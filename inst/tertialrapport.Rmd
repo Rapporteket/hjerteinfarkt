@@ -19,21 +19,6 @@ header-includes:
   - \captionsetup{font=small}
 ---
 
-
-<!-- --- -->
-<!-- title: "Tertialrapport" -->
-<!-- output: -->
-<!--   html_fragment: -->
-<!--     toc: false -->
-<!--   pdf_document: default -->
-<!-- params: -->
-<!--   type: "html" -->
-<!--   var: "mpg" -->
-<!--   bins: 5 -->
-<!--   enhet: "Ahus" -->
-<!-- --- -->
-
-
 ```{r setup, include=FALSE}
 library(knitr)
 library(kableExtra)
